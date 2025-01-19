@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Circle</title>
+</head>
+<body>
+    <canvas id="webgl-canvas" width="500" height="500"></canvas>
+    <script>
+// Vertex shader source code
+const vertexShaderSource = `
+    attribute vec2 aPosition;
+    uniform vec2 dim;
+    vec2 transformedPosition;
+    attribute vec4 vColor;
+    varying vec4 fColor;
+
+    void main() {
+        fColor = vColor;
+        transformedPosition =(vec2(2.0,-2.0) * aPosition) / dim + vec2(-1.0,1.0);
+        gl_Position = vec4(transformedPosition, 0.0, 1.0); 
+    }
+`;
+</script>
+<script>
+    // Fragment shader source code
+    const fragmentShaderSource = `
+        precision mediump float;
+        varying vec4 fColor;
+
+        void main() {
+            gl_FragColor = vec4(1.0,0.,0.,1.); 
+        }
+    `;
+</script>
+<script type="text/javascript" src="setupShader.js"></script>
+<script>
+
+// Set up geometry data
+const numSegments = 50;
+const center = [250, 250];
+const radius = 200;
+const vertices = [center[0], center[1]];
+const indices = [];
+// const color = [1,1,1,1];
+for (let i = 0; i <= numSegments; i++) {
+    const angle = (i / numSegments) * 2 * Math.PI;
+    const x = Math.cos(angle) * radius + center[0];
+    const y = - Math.sin(angle) * radius + center[1];
+    vertices.push(x, y);
+    indices.push(0,i+1);
+    indices.push(i,i+1);
+    // color.push(i / numSegments, 1 - i / numSegments, 1 - i / numSegments, 1);
+}
+
+
+// color VBO
+// const color_buffer = gl.createBuffer();
+// const vertex_color_location = gl.getAttribLocation(program, 'vColor');
+// gl.enableVertexAttribArray(vertex_color_location);
+
+// gl.bindBuffer(gl.ARRAY_BUFFER, color_buffer);
+// gl.vertexAttribPointer(vertex_color_location, 4, gl.FLOAT, false, 0, 0);
+// gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(color), gl.STATIC_DRAW);
+
+// vertex buffer
+const buffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+
+const aPositionLocation = gl.getAttribLocation(program, 'aPosition');
+gl.vertexAttribPointer(aPositionLocation, 2, gl.FLOAT, false, 0, 0);
+gl.enableVertexAttribArray(aPositionLocation);
+
+// indices buffer
+const indexBuffer = gl.createBuffer();
+gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
+
+// Pass Uniform Dimensions to Shader
+const dimLocation = gl.getUniformLocation(program, 'dim');
+gl.uniform2f(dimLocation, canvas.width, canvas.height);
+
+// Set up the viewport and clear the canvas
+gl.viewport(0, 0, canvas.width, canvas.height);
+gl.clearColor(0.0, 0.0, 0.0, 1.0);
+gl.clear(gl.COLOR_BUFFER_BIT);
+
+// Draw the triangle
+gl.drawElements(gl.LINES, indices.length, gl.UNSIGNED_SHORT, 0);
+</script>
+</body>
+</html>
