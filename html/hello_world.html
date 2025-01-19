@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hello World</title>
+</head>
+<body>
+    <canvas id="webgl-canvas" width="500" height="500"></canvas>
+
+<script>
+// Vertex shader source code
+const vertexShaderSource = `
+    attribute vec2 aPosition;
+
+    void main() {
+        gl_Position = vec4(aPosition, -0, 1.0);
+    }
+`;
+</script>
+<script>
+// Fragment shader source code
+const fragmentShaderSource = `
+    precision mediump float;
+
+    void main() {
+        gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0); // Red color
+    }
+`;
+</script>
+<script type="text/javascript" src="setupShader.js"></script>
+<script>
+// Set up geometry data
+const vertices = new Float32Array([
+    0.0,  0.5,  // Vertex 1
+    -0.5, -0.5,  // Vertex 2
+    0.5, -0.5   // Vertex 3
+]);
+
+// Create a buffer and upload the vertex data
+const buffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+
+// Get attribute location and enable it
+const aPositionLocation = gl.getAttribLocation(program, 'aPosition');
+gl.vertexAttribPointer(aPositionLocation, 2, gl.FLOAT, false, 0, 0);
+gl.enableVertexAttribArray(aPositionLocation);
+
+// Set up the viewport and clear the canvas
+gl.viewport(0, 0, canvas.width, canvas.height);
+gl.clearColor(0.0, 0.0, 0.0, 1.0);
+gl.clear(gl.COLOR_BUFFER_BIT);
+
+// Draw the triangle
+gl.drawArrays(gl.TRIANGLES, 0, 3);
+</script>
+</body>
+</html>

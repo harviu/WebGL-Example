@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interaction</title>
+</head>
+<body>
+    <canvas id="webgl-canvas" width="500" height="500"></canvas>
+    <script>
+// Vertex shader source code
+const vertexShaderSource = `
+    attribute vec2 aPosition;
+    uniform vec2 dim;
+    vec2 transformedPosition;
+
+    void main() {
+        transformedPosition =(vec2(2.0,-2.0) * aPosition) / dim + vec2(-1.0,1.0);
+        gl_Position = vec4(transformedPosition, 0.0, 1.0); 
+        gl_PointSize = 5.0;
+    }
+`;
+</script>
+<script>
+    // Fragment shader source code
+    const fragmentShaderSource = `
+        precision mediump float;
+
+        void main() {
+            gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0); // Red color
+        }
+    `;
+</script>
+<script type="text/javascript" src="setupShader.js"></script>
+<script>
+
+// Pass Uniform Dimensions to Shader
+const dimLocation = gl.getUniformLocation(program, 'dim');
+gl.uniform2f(dimLocation, canvas.width, canvas.height);
+
+// Set up the viewport and clear the canvas
+gl.viewport(0, 0, canvas.width, canvas.height);
+gl.clearColor(0.0, 0.0, 0.0, 1.0);
+gl.clear(gl.COLOR_BUFFER_BIT);
+
+// Create a buffer and upload the vertex data
+const buffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+
+// Get attribute location and enable it
+const aPositionLocation = gl.getAttribLocation(program, 'aPosition');
+gl.enableVertexAttribArray(aPositionLocation); // enable attribute
+gl.vertexAttribPointer(aPositionLocation, 2, gl.FLOAT, false, 0, 0); //Point buffer to attribute aPosition
+
+// Set up geometry data
+let vertices = []
+canvas.addEventListener('mousedown', (event) => {
+    const rect = canvas.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    vertices.push(x);
+    vertices.push(y);
+
+    //Update Buffer Data
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+    // Set Background
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    // Draw the dots
+    gl.drawArrays(gl.POINTS, 0, vertices.length/2);
+});
+
+
+
+</script>
+</body>
+</html>
