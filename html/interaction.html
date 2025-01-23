@@ -58,6 +58,8 @@ canvas.addEventListener('mousedown', (event) => {
     const rect = canvas.getBoundingClientRect();
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
+    console.log("Input X:", x);
+    console.log("Input Y:", y);
     vertices.push(x);
     vertices.push(y);
 
