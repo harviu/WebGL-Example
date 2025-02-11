@@ -98,12 +98,12 @@ function drawScene() {
     mat4.perspective(pMatrix, glMatrix.toRadian(60), 1.0, 0.1, 100); // set up the projection matrix 
 
     mat4.identity(vMatrix);
-    mat4.lookAt(vMatrix, [0, 0, 5], [0, 0, 0], [0, 1, 0]); // Corrected function usage
+    mat4.lookAt(vMatrix, [0, 0, 5], [0, 0, 0], [0, 1, 0]); // set up the view matrix
 
     mat4.identity(mMatrix);
-	
+
     console.log('Z angle = ' + Z_angle);
-    mat4.rotate(mMatrix, mMatrix, degToRad(Z_angle), [0, 1, 1]); // Corrected function usage
+    mat4.rotate(mMatrix, mMatrix, degToRad(Z_angle), [0, 1, 1]); // set up the model matrix
 
     mat4.multiply(mvMatrix, vMatrix, mMatrix); // mvMatrix = vMatrix * mMatrix
 
