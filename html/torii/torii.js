@@ -83,6 +83,9 @@ function drawScene() {
     mat4.perspective(pMatrix, glMatrix.toRadian(60), 1.0, 0.1, 20); // changed to glMatrix version 2
     // fovy, aspect, near, far
     // Try changing the parameters to see the effects
+    // Task: Change from mat4.perspective to mat4.frustum to have the same effect
+    // Hint: calculate the left, right, bottom, top from the fovy, aspect, near, far
+    // mat4.frustum(pMatrix, left, right, bottom, top, near, far);
     // Extra Task: Setup this matrix from scratch
 
     // modify vMatrix
