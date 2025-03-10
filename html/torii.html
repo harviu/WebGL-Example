@@ -78,6 +78,8 @@
     eye_vector = -vec3(eye_pos);
 
     light_v = vec3(uNMatrix*light_vector);
+    // uncomment the line below to define the point light source at eye location
+    // light_v = vec3(-eye_pos);
 
     gl_Position = uPMatrix*uMVMatrix*vec4(aVertexPosition, 1.0);
 
