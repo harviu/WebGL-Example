@@ -303,7 +303,7 @@ function generateCube(size){
     let n = [];
     let ccc = size/2;
 
-    //input vertices
+    // input vertices
     v.push(ccc);v.push(ccc);v.push(ccc);
     v.push(ccc);v.push(-ccc);v.push(ccc);
     v.push(-ccc);v.push(ccc);v.push(ccc);
@@ -313,14 +313,7 @@ function generateCube(size){
     v.push(ccc);v.push(ccc);v.push(-ccc);
     v.push(ccc);v.push(-ccc);v.push(-ccc);
 
-    // v.push(0);v.push(0);v.push(ccc);
-    // v.push(-ccc);v.push(0);v.push(0);
-    // v.push(0);v.push(0);v.push(-ccc);
-    // v.push(ccc);v.push(0);v.push(0);
-    // v.push(0);v.push(ccc);v.push(0);
-    // v.push(0);v.push(-ccc);v.push(0);
-
-
+    // input normal
     n.push(ccc);n.push(ccc);n.push(ccc);
     n.push(ccc);n.push(-ccc);n.push(ccc);
     n.push(-ccc);n.push(ccc);n.push(ccc);
@@ -330,14 +323,8 @@ function generateCube(size){
     n.push(ccc);n.push(ccc);n.push(-ccc);
     n.push(ccc);n.push(-ccc);n.push(-ccc);
 
-    // n.push(0);n.push(0);n.push(ccc);
-    // n.push(-ccc);n.push(0);n.push(0);
-    // n.push(0);n.push(0);n.push(-ccc);
-    // n.push(ccc);n.push(0);n.push(0);
-    // n.push(0);n.push(ccc);n.push(0);
-    // n.push(0);n.push(-ccc);n.push(0);
 
-    //input index
+    // input index
     index.push(0);index.push(1);index.push(2);
     index.push(1);index.push(2);index.push(3);
     index.push(2);index.push(3);index.push(4);
@@ -350,22 +337,6 @@ function generateCube(size){
     index.push(0);index.push(4);index.push(6);
     index.push(1);index.push(3);index.push(5);
     index.push(1);index.push(5);index.push(7);
-    // for(let i =8;i<12;i++){
-    //     let start = i*2-16;
-    //     index.push(start);index.push(start+1);index.push(i);
-    //     index.push(start);index.push((start+2)%8);index.push(i);
-    //     index.push(start+1);index.push((start+3)%8);index.push(i);
-    //     index.push((start+3)%8);index.push((start+2)%8);index.push(i);
-    // }
-
-    // index.push(1);index.push(3);index.push(13);
-    // index.push(3);index.push(5);index.push(13);
-    // index.push(5);index.push(7);index.push(13);
-    // index.push(7);index.push(1);index.push(13);
-    // index.push(0);index.push(2);index.push(12);
-    // index.push(2);index.push(4);index.push(12);
-    // index.push(4);index.push(6);index.push(12);
-    // index.push(6);index.push(0);index.push(12);
 
     return (initBuffer(v,index,n));
 }
