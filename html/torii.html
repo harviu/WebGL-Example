@@ -33,10 +33,11 @@
 
     vec4 diffuse = diffuse_coef * light_color* ndotl;
 
-    //      both lines below are okay. One is to use the reflect function the other is to compute by yourself 
+    // calculated the reflected light vector R (you can also use the formula R = 2(L.N)N - L)
     vec3 R= normalize(vec3(reflect(-l, v))); 
     float rdotv = max(dot(R, e), 0.0);
 
+    // make sure N.L is larger than 0, this can be redundent
     vec4 specular;  
     if (ndotl>0.0) 
       specular = specular_coef* light_color*pow(rdotv, mat_shininess); 
