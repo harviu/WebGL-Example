@@ -96,13 +96,6 @@ function drawScene() {
     vMatrix = mat4.rotate(vMatrix,vMatrix,-horizontal,[0,1,0]);
     // Task: How to pan/tilt the camera?
     // Task: Try to translate this code to mat4.lookAt
-    
-    //modify mMatrix here
-    // //test
-    // vi = generateCube(0.3);
-    // mat4.identity(mMatrix);	
-    // mMatrix = mat4.scale(mMatrix,[1,1,20]);
-    // drawBuffer(vi[0],vi[1],vi[2]);
 
     // drawing Torii
 

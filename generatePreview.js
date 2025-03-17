@@ -12,24 +12,29 @@ const path = require('path');
         fs.mkdirSync(outputPath);
     }
 
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({
+        headless: true,
+        args: [
+            '--disable-web-security', // Disable CORS
+            '--allow-file-access-from-files', // Allow local file access
+            '--disable-features=IsolateOrigins,site-per-process' // Prevent site isolation issues
+        ]
+    });
     const page = await browser.newPage();
-
-    // for (const file of files) {
-    //     const filePath = path.join(folderPath, file);
-    //     const previewPath = path.join(outputPath, `${path.basename(file, '.html')}.png`);
-        
-    //     console.log(`Generating preview for ${file}`);
-    //     await page.goto(`file://${path.resolve(filePath)}`, { waitUntil: 'networkidle2' });
-    //     await page.screenshot({ path: previewPath, fullPage: true });
-    //     console.log(`Preview saved: ${previewPath}`);
-    // }
 
     for (const file of files) {
         const filePath = path.join(folderPath, file);
         const previewPrefix = path.join(outputPath, path.basename(file, '.html'));
 
         console.log(`Processing ${file}...`);
+
+        // Check if preview already exists
+        const existingPreviews = fs.readdirSync(outputPath).filter(f => f.startsWith(path.basename(file, '.html')));
+        if (existingPreviews.length > 0) {
+            console.log(`Skipping ${file}, previews already exist.`);
+            continue;
+        }
+
         await page.goto(`file://${path.resolve(filePath)}`, { waitUntil: 'networkidle2' });
 
         // Find all canvas elements
