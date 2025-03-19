@@ -46,7 +46,7 @@ function initTextures() {
     sampleTexture = gl.createTexture();
     sampleTexture.image = new Image();
     sampleTexture.image.onload = function() { handleTextureLoaded(sampleTexture); }
-    //    sampleTexture.image.src = "earth.png";
+    // sampleTexture.image.src = "earth.png";
     sampleTexture.image.src = "brick.png";    
     console.log("loading texture....") 
 }
@@ -54,9 +54,22 @@ function initTextures() {
 function handleTextureLoaded(texture) {
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.image);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-    gl.bindTexture(gl.TEXTURE_2D, null);
+
+    // Check if the image has power-of-2 dimensions
+    if (isPowerOf2(texture.image.width) && isPowerOf2(texture.image.height)) {
+        gl.generateMipmap(gl.TEXTURE_2D);
+    } else {
+        // Set texture parameters for non-power-of-2 textures
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    }
+    console.log("Texture loaded:", sampleTexture.image.src);
+    drawScene();
+}
+
+function isPowerOf2(value) {
+    return (value & (value - 1)) === 0;
 }
 
 ///////////////////////////////////////////////////////////
@@ -70,7 +83,6 @@ var xmin, xmax, ymin, ymax, zmin, zmax;
 
 function find_range(positions)
 {
-    console.log("hello!"); 
     xmin = xmax = positions[0];
     ymin = ymax = positions[1];
     zmin = zmax = positions[2];
@@ -108,7 +120,7 @@ function initJSON()
 
 function handleLoadedTeapot(teapotData)
 {
-    console.log(" in hand LoadedTeapot"); 
+    console.log("in hand LoadedTeapot"); 
     teapotVertexPositionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, teapotVertexPositionBuffer);
     gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(teapotData.vertexPositions),gl.STATIC_DRAW);
@@ -123,7 +135,9 @@ function handleLoadedTeapot(teapotData)
 
     teapotVertexTextureCoordBuffer=gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, teapotVertexTextureCoordBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(teapotData.vertexTextureCoords),
+    // the original texture coordinate range is [0,2]x[0,2]
+    let normalizedTextureCoords = teapotData.vertexTextureCoords.map((coord) => coord / 2);
+    gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(normalizedTextureCoords),
 		  gl.STATIC_DRAW);
     teapotVertexTextureCoordBuffer.itemSize=2;
     teapotVertexTextureCoordBuffer.numItems=teapotData.vertexTextureCoords.length/2;
@@ -151,7 +165,7 @@ function handleLoadedTeapot(teapotData)
 ///////////////////////////////////////////////////////////////
 
     var mMatrix = mat4.create();  // model matrix
-    var vMatrix = mat4.create(); // view matrix
+    var vMatrix = mat4.create();  // view matrix
     var pMatrix = mat4.create();  //projection matrix
     var nMatrix = mat4.create();  // normal matrix
     var Z_angle = 0.0;
@@ -224,11 +238,11 @@ function drawScene() {
 
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, teapotVertexIndexBuffer);
 
-     setMatrixUniforms();   // pass the modelview mattrix and projection matrix to the shader
+    setMatrixUniforms();   // pass the modelview mattrix and projection matrix to the shader
 	gl.uniform1i(shaderProgram.use_textureUniform, use_texture);     
 
 
-     gl.activeTexture(gl.TEXTURE0);   // set texture unit 0 to use 
+    gl.activeTexture(gl.TEXTURE0);   // set texture unit 0 to use 
 	gl.bindTexture(gl.TEXTURE_2D, sampleTexture);    // bind the texture object to the texture unit 
 	gl.uniform1i(shaderProgram.textureUniform, 0);   // pass the texture unit to the shader         
 
@@ -308,8 +322,8 @@ function drawScene() {
 	
         shaderProgram.mMatrixUniform = gl.getUniformLocation(shaderProgram, "uMMatrix");
         shaderProgram.vMatrixUniform = gl.getUniformLocation(shaderProgram, "uVMatrix");
-	shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
-	shaderProgram.nMatrixUniform = gl.getUniformLocation(shaderProgram, "uNMatrix");	
+	    shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
+	    shaderProgram.nMatrixUniform = gl.getUniformLocation(shaderProgram, "uNMatrix");	
 
         shaderProgram.light_posUniform = gl.getUniformLocation(shaderProgram, "light_pos");
         shaderProgram.ambient_coefUniform = gl.getUniformLocation(shaderProgram, "ambient_coef");	
@@ -321,12 +335,12 @@ function drawScene() {
         shaderProgram.light_diffuseUniform = gl.getUniformLocation(shaderProgram, "light_diffuse");
         shaderProgram.light_specularUniform = gl.getUniformLocation(shaderProgram, "light_specular");	
 
-	shaderProgram.textureUniform = gl.getUniformLocation(shaderProgram, "myTexture");
+	    shaderProgram.textureUniform = gl.getUniformLocation(shaderProgram, "myTexture");
         shaderProgram.use_textureUniform = gl.getUniformLocation(shaderProgram, "use_texture");
 	
-	initJSON();
+	    initJSON();
 
-	initTextures(); 	
+	    initTextures(); 	
 
         gl.clearColor(0.0, 0.0, 0.0, 1.0);
         console.log('start! ');
