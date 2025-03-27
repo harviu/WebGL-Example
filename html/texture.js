@@ -19,6 +19,7 @@
   var light_specular = [1,1,1,1]; 
   var light_pos = [0,0,0,1];   // eye space position 
   var bump_strength = 1.0;
+  var dim_x = 512, dim_y = 512;
 
   var mat_ambient = [0, 0, 0, 1]; 
   var mat_diffuse= [1, 1, 1, 1]; 
@@ -56,6 +57,8 @@ function initTextures() {
 function handleTextureLoaded(texture) {
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.image);
+    dim_x = texture.image.width;
+    dim_y = texture.image.height;
 
     // Check if the image has power-of-2 dimensions
     if (isPowerOf2(texture.image.width) && isPowerOf2(texture.image.height)) {
@@ -205,6 +208,8 @@ function initSQBuffers() {
         gl.uniform4f(shaderProgram.specular_coefUniform, mat_specular[0], mat_specular[1], mat_specular[2],1.0); 
         gl.uniform1f(shaderProgram.shininess_coefUniform, mat_shine[0]); 
         gl.uniform1f(shaderProgram.bump_strengthUniform, bump_strength); 
+        gl.uniform1f(shaderProgram.dim_x, dim_x); 
+        gl.uniform1f(shaderProgram.dim_y, dim_y); 
 
         gl.uniform4f(shaderProgram.light_ambientUniform, light_ambient[0], light_ambient[1], light_ambient[2], 1.0); 
         gl.uniform4f(shaderProgram.light_diffuseUniform, light_diffuse[0], light_diffuse[1], light_diffuse[2], 1.0); 
@@ -308,6 +313,8 @@ function initSQBuffers() {
         shaderProgram.specular_coefUniform = gl.getUniformLocation(shaderProgram, "specular_coef");
         shaderProgram.shininess_coefUniform = gl.getUniformLocation(shaderProgram, "mat_shininess");
         shaderProgram.bump_strengthUniform = gl.getUniformLocation(shaderProgram, "heightScale");
+        shaderProgram.dim_x = gl.getUniformLocation(shaderProgram, "dim_x");
+        shaderProgram.dim_y = gl.getUniformLocation(shaderProgram, "dim_y");
 
         shaderProgram.light_ambientUniform = gl.getUniformLocation(shaderProgram, "light_ambient");	
         shaderProgram.light_diffuseUniform = gl.getUniformLocation(shaderProgram, "light_diffuse");

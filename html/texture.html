@@ -26,6 +26,8 @@
     uniform vec4 specular_coef;
     uniform float mat_shininess; 
     uniform float heightScale;
+    uniform float dim_x;
+    uniform float dim_y;
 
     uniform vec4 light_ambient; 
     uniform vec4 light_diffuse; 
@@ -54,7 +56,7 @@
             vec3 binormal = cross(normal,tangent);
         
             // Texture coordinate offsets (based on texel size)
-            vec2 texelSize = vec2(1.0 / 512.0, 1.0 / 512.0); // adjust for your texture resolution
+            vec2 texelSize = vec2(1.0 / dim_x, 1.0 / dim_y); 
         
             // Sample heights from neighboring texels
             float heightC = texture2D(myTexture, FtexCoord).r;
