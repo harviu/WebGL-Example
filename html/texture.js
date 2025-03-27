@@ -8,21 +8,22 @@
 //  
 //  Edited by: Haoyu Li (lihao@gvsu.edu)
 
-var gl;
-var shaderProgram;
-var draw_type=2;
-var use_texture = 1; 
+    var gl;
+    var shaderProgram;
+    var use_texture = 1; 
+    var canvas;
 
  // set up the parameters for lighting 
   var light_ambient = [0,0,0,1]; 
   var light_diffuse = [.8,.8,.8,1];
   var light_specular = [1,1,1,1]; 
   var light_pos = [0,0,0,1];   // eye space position 
+  var bump_strength = 1.0;
 
   var mat_ambient = [0, 0, 0, 1]; 
-  var mat_diffuse= [1, 1, 0, 1]; 
+  var mat_diffuse= [1, 1, 1, 1]; 
   var mat_specular = [.9, .9, .9,1]; 
-  var mat_shine = [50]; 
+  var mat_shine = [100]; 
 
 
 //////////// Init OpenGL Context etc. ///////////////
@@ -79,8 +80,10 @@ var squareVertexPositionBuffer;
 var squareVertexNormalBuffer;
 var squareVertexColorBuffer;
 var squareVertexIndexBuffer;
+var squareVertexTangentBuffer;
 
 var sqvertices = [];
+var sqtangents = [];
 var sqnormals = []; 
 var sqindices = [];
 var sqcolors = [];
@@ -100,6 +103,12 @@ function InitSquare()
             0.0, 0.0, 1.0,
             0.0, 0.0, 1.0,
             0.0, 0.0, 1.0,
+        ];    
+        sqtangents = [
+            1.0, 0.0, 0.0,
+            1.0, 0.0, 0.0,
+            1.0, 0.0, 0.0,
+            1.0, 0.0, 0.0,
         ];    
         // Texture coordinates for the corners of the square.
         sqTexCoords = [
@@ -125,6 +134,12 @@ function initSQBuffers() {
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(sqnormals), gl.STATIC_DRAW);
         squareVertexNormalBuffer.itemSize = 3;
         squareVertexNormalBuffer.numItems = 4; 
+
+        squareVertexTangentBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexTangentBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(sqtangents), gl.STATIC_DRAW);
+        squareVertexTangentBuffer.itemSize = 3;
+        squareVertexTangentBuffer.numItems = 4; 
 
         squareVertexTexCoordsBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexTexCoordsBuffer);
@@ -189,6 +204,7 @@ function initSQBuffers() {
         gl.uniform4f(shaderProgram.diffuse_coefUniform, mat_diffuse[0], mat_diffuse[1], mat_diffuse[2], 1.0); 
         gl.uniform4f(shaderProgram.specular_coefUniform, mat_specular[0], mat_specular[1], mat_specular[2],1.0); 
         gl.uniform1f(shaderProgram.shininess_coefUniform, mat_shine[0]); 
+        gl.uniform1f(shaderProgram.bump_strengthUniform, bump_strength); 
 
         gl.uniform4f(shaderProgram.light_ambientUniform, light_ambient[0], light_ambient[1], light_ambient[2], 1.0); 
         gl.uniform4f(shaderProgram.light_diffuseUniform, light_diffuse[0], light_diffuse[1], light_diffuse[2], 1.0); 
@@ -199,6 +215,9 @@ function initSQBuffers() {
 
         gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexNormalBuffer);
 	    gl.vertexAttribPointer(shaderProgram.vertexNormalAttribute, squareVertexNormalBuffer.itemSize, gl.FLOAT, false, 0, 0);
+ 
+        gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexTangentBuffer);
+	    gl.vertexAttribPointer(shaderProgram.vertexTangentAttribute, squareVertexTangentBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
         gl.bindBuffer(gl.ARRAY_BUFFER, squareVertexTexCoordsBuffer);
 	    gl.vertexAttribPointer(shaderProgram.vertexTexCoordsAttribute, squareVertexTexCoordsBuffer.itemSize, gl.FLOAT, false, 0, 0);
@@ -213,9 +232,7 @@ function initSQBuffers() {
         gl.bindTexture(gl.TEXTURE_2D, sampleTexture);    // bind the texture object to the texture unit 
         gl.uniform1i(shaderProgram.textureUniform, 0);   // pass the texture unit to the shader 
 
-        if (draw_type ==1) gl.drawArrays(gl.LINE_LOOP, 0, squareVertexPositionBuffer.numItems);	
-            else if (draw_type ==0) gl.drawArrays(gl.POINTS, 0, squareVertexPositionBuffer.numItems);
-        else if (draw_type==2) gl.drawElements(gl.TRIANGLES, squareVertexIndexBuffer.numItems , gl.UNSIGNED_SHORT, 0);
+        gl.drawElements(gl.TRIANGLES, squareVertexIndexBuffer.numItems , gl.UNSIGNED_SHORT, 0);
 	
     }
 
@@ -228,9 +245,8 @@ function initSQBuffers() {
 
      function onDocumentMouseDown( event ) {
           event.preventDefault();
-          document.addEventListener( 'mousemove', onDocumentMouseMove, false );
-          document.addEventListener( 'mouseup', onDocumentMouseUp, false );
-          document.addEventListener( 'mouseout', onDocumentMouseOut, false );
+          canvas.addEventListener( 'mousemove', onDocumentMouseMove, false );
+          canvas.addEventListener( 'mouseup', onDocumentMouseUp, false );
           var mouseX = event.clientX;
           var mouseY = event.clientY;
 
@@ -255,21 +271,14 @@ function initSQBuffers() {
      }
 
      function onDocumentMouseUp( event ) {
-          document.removeEventListener( 'mousemove', onDocumentMouseMove, false );
-          document.removeEventListener( 'mouseup', onDocumentMouseUp, false );
-          document.removeEventListener( 'mouseout', onDocumentMouseOut, false );
-     }
-
-     function onDocumentMouseOut( event ) {
-          document.removeEventListener( 'mousemove', onDocumentMouseMove, false );
-          document.removeEventListener( 'mouseup', onDocumentMouseUp, false );
-          document.removeEventListener( 'mouseout', onDocumentMouseOut, false );
+          canvas.removeEventListener( 'mousemove', onDocumentMouseMove, false );
+          canvas.removeEventListener( 'mouseup', onDocumentMouseUp, false );
      }
 
     ///////////////////////////////////////////////////////////////
 
     function webGLStart() {
-        var canvas = document.getElementById("code10-canvas");
+        canvas = document.getElementById("code10-canvas");
         initGL(canvas);
         initShaders();
 
@@ -280,6 +289,9 @@ function initSQBuffers() {
 
         shaderProgram.vertexNormalAttribute = gl.getAttribLocation(shaderProgram, "aVertexNormal");
         gl.enableVertexAttribArray(shaderProgram.vertexNormalAttribute);
+
+        shaderProgram.vertexTangentAttribute = gl.getAttribLocation(shaderProgram, "aVertexTangent");
+        gl.enableVertexAttribArray(shaderProgram.vertexTangentAttribute);
 
         shaderProgram.vertexTexCoordsAttribute = gl.getAttribLocation(shaderProgram, "aVertexTexCoords");
         console.log(shaderProgram.vertexTexCoordsAttribute)
@@ -295,6 +307,7 @@ function initSQBuffers() {
         shaderProgram.diffuse_coefUniform = gl.getUniformLocation(shaderProgram, "diffuse_coef");
         shaderProgram.specular_coefUniform = gl.getUniformLocation(shaderProgram, "specular_coef");
         shaderProgram.shininess_coefUniform = gl.getUniformLocation(shaderProgram, "mat_shininess");
+        shaderProgram.bump_strengthUniform = gl.getUniformLocation(shaderProgram, "heightScale");
 
         shaderProgram.light_ambientUniform = gl.getUniformLocation(shaderProgram, "light_ambient");	
         shaderProgram.light_diffuseUniform = gl.getUniformLocation(shaderProgram, "light_diffuse");
@@ -310,7 +323,19 @@ function initSQBuffers() {
         gl.clearColor(0.0, 0.0, 0.0, 1.0);
         console.log('start! ');
 
-        document.addEventListener('mousedown', onDocumentMouseDown,false); 
+        canvas.addEventListener('mousedown', onDocumentMouseDown,false); 
+
+        const bumpSlider = document.getElementById("bumpStrength"); 
+        const bumpValueDisplay = document.getElementById("bumpValue");
+
+        bump_strength = parseFloat(bumpSlider.value);
+    
+        // Update display and shader uniform when slider is changed
+        bumpSlider.addEventListener("input", () => {
+            bump_strength = parseFloat(bumpSlider.value);
+            bumpValueDisplay.textContent = bump_strength.toFixed(2);
+            drawScene();
+        })
 
         drawScene();
     }
@@ -326,19 +351,12 @@ function redraw() {
     Z_angle = 0; 
     drawScene();
 }
-    
-
-function geometry(value) {
-
-    draw_type = value;
-    drawScene();
-
-} 
 
 function texture(value, filename = undefined) {
+    // 0: no texture, 1: texture mapping, 2: bump mapping
 
     use_texture = value;
-    if (value == 1) {
+    if (value > 0) {
         source = filename;
         initTextures();
     }
