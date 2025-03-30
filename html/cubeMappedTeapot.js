@@ -50,36 +50,36 @@ function initCubeMap() {
     cubemapTexture = gl.createTexture();
     cubemapTexture.px = new Image();
     cubemapTexture.px.onload = function() { handleCubemapTextureLoaded(cubemapTexture,'px'); }
-    cubemapTexture.px.src = "posx.jpg";
+    cubemapTexture.px.src = "cube_map/posx.jpg";
     cubemapTexture.pxx = gl.createTexture();
     cubemapTexture.pxx.image = cubemapTexture.px;
 
     cubemapTexture.nx = new Image();
     cubemapTexture.nx.onload = function() { handleCubemapTextureLoaded(cubemapTexture,'nx'); }
-    cubemapTexture.nx.src = "negx.jpg";
+    cubemapTexture.nx.src = "cube_map/negx.jpg";
     cubemapTexture.nxx = gl.createTexture();
     cubemapTexture.nxx.image = cubemapTexture.nx;
 
     cubemapTexture.py = new Image();
     cubemapTexture.py.onload = function() { handleCubemapTextureLoaded(cubemapTexture,'py'); }
-    cubemapTexture.py.src = "posy.jpg"; 
+    cubemapTexture.py.src = "cube_map/posy.jpg"; 
     cubemapTexture.pyy = gl.createTexture();
     cubemapTexture.pyy.image = cubemapTexture.py;
 
     cubemapTexture.ny = new Image();
     cubemapTexture.ny.onload = function() { handleCubemapTextureLoaded(cubemapTexture,'ny'); }
-    cubemapTexture.ny.src = "negy.jpg"; 
+    cubemapTexture.ny.src = "cube_map/negy.jpg"; 
     cubemapTexture.nyy = gl.createTexture();
     cubemapTexture.nyy.image = cubemapTexture.ny;
 
     cubemapTexture.pz = new Image();
     cubemapTexture.pz.onload = function() { handleCubemapTextureLoaded(cubemapTexture,'pz'); }
-    cubemapTexture.pz.src = "posz.jpg"; 
+    cubemapTexture.pz.src = "cube_map/posz.jpg"; 
     cubemapTexture.pzz = gl.createTexture();
     cubemapTexture.pzz.image = cubemapTexture.pz;
     cubemapTexture.nz = new Image();
     cubemapTexture.nz.onload = function() { handleCubemapTextureLoaded(cubemapTexture,'nz'); }
-    cubemapTexture.nz.src = "negz.jpg"; 
+    cubemapTexture.nz.src = "cube_map/negz.jpg"; 
     cubemapTexture.nzz = gl.createTexture();
     cubemapTexture.nzz.image = cubemapTexture.nz;
 } 
