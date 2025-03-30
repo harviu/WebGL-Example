@@ -50,6 +50,13 @@
             texcolor = texture2D(myTexture, FtexCoord); 
             gl_FragColor = texcolor; 
         }
+        else if (use_texture == 3){
+            // checker board pattern
+            vec2 checker = floor(FtexCoord * vec2(10.0, 10.0));
+            float checkerPattern = mod(checker.x + checker.y, 2.0);
+            texcolor = mix(vec4(1.0, 1.0, 1.0, 1.0), vec4(0.0, 0.0, 0.0, 1.0), checkerPattern);
+            gl_FragColor = texcolor;
+        }
         else if (use_texture == 2) {
             vec3 normal = normalize( v_normal );
             vec3 tangent = normalize( v_tangent );
@@ -197,10 +204,11 @@
 
     <h4> Texture:  </h4>
     <button  onclick="texture(0)"> NO</button>
-    <h3> Texture Mapping </h3>
+    <button  onclick="texture(3)"> Checker Board</button>
+    <h5> Texture Mapping </h5>
     <button  onclick="texture(1, 'earth.png')"> Earth </button>
     <button  onclick="texture(1, 'brick.png')"> Brick </button>
-    <h3> Bump Mapping </h3>
+    <h5> Bump Mapping </h5>
     <button  onclick="texture(2, 'height_map/brick-height-map.jpg')">Brick</button>
     <button  onclick="texture(2, 'height_map/dimples-height-map.png')">Dimples</button>
     <button  onclick="texture(2, 'height_map/random-height-map.png')">Noise</button>
