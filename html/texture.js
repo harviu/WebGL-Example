@@ -299,7 +299,6 @@ function initSQBuffers() {
         gl.enableVertexAttribArray(shaderProgram.vertexTangentAttribute);
 
         shaderProgram.vertexTexCoordsAttribute = gl.getAttribLocation(shaderProgram, "aVertexTexCoords");
-        console.log(shaderProgram.vertexTexCoordsAttribute)
         gl.enableVertexAttribArray(shaderProgram.vertexTexCoordsAttribute);
 	
         shaderProgram.mMatrixUniform = gl.getUniformLocation(shaderProgram, "uMMatrix");
