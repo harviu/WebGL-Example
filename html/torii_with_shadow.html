@@ -4,19 +4,8 @@
 <html>
 
 <head>
-<title>Import 3D Model</title>
+<title>Torii with Shadow</title>
 <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
-
-<!-- Import Three JS data Loader -->
-
-<script type="importmap">
-  {
-    "imports": {
-      "three": "https://cdn.jsdelivr.net/npm/three@0.175.0/build/three.module.js",
-      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.175.0/examples/jsm/"
-    }
-  }
-</script>
 
 <!--  ************** Fragment Shader ************* --> 
 <script id="shader-fs" type="x-shader/x-fragment">
@@ -27,14 +16,24 @@
   uniform vec4 specular_coef;
   uniform vec4 light_color;
   uniform float mat_shininess; 
-
-  uniform sampler2D myTexture;
+  uniform sampler2D uShadowMap;
 
   varying vec4 eye_pos;  //vertex position in eye space 
   varying vec3 v_normal;  // vertex normal
   varying vec3 light_v; //parallel light vector in eye
-  varying highp vec2 FtexCoord; 
   varying vec3 eye_vector;
+  varying vec4 vFragPosLightSpace;
+
+  float shadowCalculation(vec4 fragPosLightSpace) {
+    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+    projCoords = projCoords * 0.5 + 0.5; 
+    float closestDepth = texture2D(uShadowMap, projCoords.xy).r;
+    float currentDepth = projCoords.z;
+  
+    float bias = 0.005;
+    float shadow = currentDepth - bias > closestDepth ? 0.5 : 0.0;
+    return shadow;
+  }
 
   void main(void) {
     vec3 v = normalize(v_normal);
@@ -57,11 +56,12 @@
       specular = specular_coef* light_color*pow(rdotv, mat_shininess); 
     else
       specular = vec4(0,0,0,1);  
-    
-    // gl_FragColor = ambient+diffuse+specular; 
 
-    gl_FragColor = texture2D(myTexture, FtexCoord); 
+    vec4 phong = ambient+diffuse+specular; 
 
+    float shadow = shadowCalculation(vFragPosLightSpace);
+
+    gl_FragColor = (1.0-shadow) * phong + shadow * vec4(0.0, 0.0, 0.0, 1.0);
   }
   
 </script>
@@ -71,18 +71,19 @@
 
   attribute vec3 aVertexPosition;
   attribute vec3 aVertexNormal;
-  attribute vec2 aVertexTexCoords; 
 
-  uniform mat4 uMVMatrix;
+  uniform mat4 uMMatrix;
+  uniform mat4 uVMatrix;
   uniform mat4 uPMatrix; 
   uniform mat4 uNMatrix;  // convert normals from world to eye
   uniform vec4 light_vector; 
+  uniform mat4 uLightSpaceMatrix;
 
   varying vec4 eye_pos;  //vertex position in eye space 
   varying vec3 v_normal;  // vertex normal
   varying vec3 light_v;
   varying vec3 eye_vector;
-  varying highp vec2 FtexCoord;
+  varying vec4 vFragPosLightSpace;
 
   void main(void) {
 
@@ -90,7 +91,9 @@
     v_normal =vec3(uNMatrix*vec4(aVertexNormal,0.0));
 
     // transform the vertex position to eye space 
-    eye_pos = uMVMatrix*vec4(aVertexPosition, 1.0);
+    vec4 worldPos = uMMatrix * vec4(aVertexPosition, 1.0);
+    eye_pos = uVMatrix * worldPos;
+    vFragPosLightSpace = uLightSpaceMatrix * worldPos;
 
     // eye vector V = e-p, where e is (0,0,0) 
     eye_vector = -vec3(eye_pos);
@@ -99,18 +102,36 @@
     // uncomment the line below to define the point light source at eye location
     // light_v = vec3(-eye_pos);
 
-    FtexCoord = aVertexTexCoords; 
+    gl_Position = uPMatrix* eye_pos;
 
-    gl_Position = uPMatrix*uMVMatrix*vec4(aVertexPosition, 1.0);
+  }
+</script>
 
+<script id="depth-fs" type="x-shader/x-fragment">
+  precision mediump float;
+  void main() { }
+</script>
+
+<!--  ************** Vertex Shader ************* --> 
+<script id="depth-vs" type="x-shader/x-vertex">
+  attribute vec3 aPosition;
+  uniform mat4 uModel;
+  uniform mat4 uLightSpaceMatrix;
+  
+  void main() {
+    gl_Position = uLightSpaceMatrix * uModel * vec4(aPosition, 1.0);
   }
 </script>
 
 </head>
 
 
-<body>
-  <canvas id="myCanvas" width="500" height="500"></canvas>
+<body onload="webGLStart();">
+
+    <canvas id="myCanvas" width="600"height="600"></canvas>
+
+
+
 <br>
   <br>
     <footer>
@@ -123,7 +144,9 @@
     ================================================== -->
   <!-- Placed at the end of the document so the pages load faster -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.8.1/gl-matrix-min.js"></script>
-  <script type="module" src="importModel.js"></script>
+  <!-- <script type="text/javascript" src="glMatrix-0.9.5.min.js"></script> -->
+  <script type="text/javascript" src="shaders_setup.js"></script>
+  <script type="text/javascript" src="torii_with_shadow.js"></script>
 <br/>
 
 </body>
