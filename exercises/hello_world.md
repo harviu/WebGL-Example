@@ -1,8 +1,10 @@
 # Exercise 2: Hello world
 
-The `hello_world.html` file is consisted of the html code and the JavaScript code. The html is the basic framework for the webpage. Since we are more focused on WebGL, the framework code will not change much from exercise to exercise.
+The `hello_world.html` file is consisted of the html code and the JavaScript code. I will first go through the code and then give you this exercise instructions.
 
 ## HTML file
+
+The html is the basic framework for the webpage. Since we are more focused on WebGL, the framework code will not change much from exercise to exercise.
 
 Here is the code snippets from `hello_world.html`, we are omitting the JS part for simplicity now. In the html file, we first defines the meta-information of the webpage and create a canvas, where we are going to render the object later.
 ```html
@@ -130,7 +132,7 @@ attribute vec2 aPosition;
 
 // main function for the vertex shader
 void main() {
-    // gl_Position is a built-in variable for the object positions. 
+    // gl_Position is a built-in variable for the vertex positions. 
     // The coordinate system we are using is 4-dimensional (why? we will discuss this later)
     // vec4 simply expand the vec2 aPosition to 4-dimensional, **this happens for all vertices in aPosition**
     // Another way to think of this is adding two columns of 0 and 1.0 to the 2D array.
@@ -141,10 +143,39 @@ void main() {
 
 ### Rasterization Stage (Fragment Shader)
 
+Similar to the vertex shader, fragment shader implements the rasterization stage in WebGL. The word fragment is similar to pixel. However, it is a rasterized fragment from the object, not a pixel in the image.
+
+Because this is a minimal example, we only assign the color of the triangle in the fragment shader.
+
 ```C
+// Set the calculation precision for floating point calculation
+// WebGL requires this specifically because of the mobile applications
 precision mediump float;
 
 void main() {
+    // gl_FragColor is a built-in variable for the fragment colors.
+    // We could set that to an array of colors so that different fragment will have different color (for shading effect)
+    // Here we just set everything as an uniform red color
+    // The color is in the format of RGBA (normalized in the range of 0~1)
+    
     gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0); // Red color
 }
 ```
+
+To experiment with different colors. You can use a [color picker](https://www.google.com/search?q=color+picker) to find RGB values.
+
+> **Debug Note:** Vertex and Fragment shaders are relatively difficult to debug. If there is bug in your shader code, the error message will appear in the console tab of the web browser like this:
+![Debugging Shaders](img/debug.png)
+The error message is: `ERROR: 0:4: 'void' : syntax error`. This means the error is from the 4th line of your vertex shader at the keyword `void`. In this example, we are missing a semicolon before.
+
+## Exercise Instruction
+
+Understand this code and finish the following tasks:
+
+1. Change the vertex coordinates of the triangle. See how triangle changes its shape.
+
+2. In the vertex shader, change the third dimension of the vertex coordinates to other values. In your submission, write done what is the effect of changing that value.
+
+3. In the fragment shader, change the color of the triangle to anything you like. 
+
+Finally, screenshot the rendered triangle with now color and shape, submit that with your finding from step 2 to BlackBoard.
