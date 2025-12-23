@@ -1,6 +1,6 @@
 # Exercise 3: 2D Coordinate System
 
-We are still looking at the same `hello_world.html` example we used before for this exercise.
+We are looking at the same `interaction.html` example for this exercise.
 
 ## Coordinate Space Change
 
@@ -9,21 +9,25 @@ The triangle is directly defined in the NDC space for the Hello World example, b
     (-0.5, -0.5), 
     (0.5, -0.5) ) we defined in the Hello World example to this new "mind space"? Show your steps of calculation in the submission
 
-## Drawing in the mind Space
+## Mouse Interaction
 
-Now, in the mind space, make another triangle of your choice. In order to render this space using WebGL, you need to convert this triangle back to the NDC space. This conversion can be done in the application stage.
+I already implemented the mouse event listener and callback function code in the example. However, the current code only prints out the mouse position in the webpage. Can you try clicking on the canvas and find out what is the coordinate system for the mouse space? You can draw a similar diagram to the one I showed in class:
+![Screen coordinate system diagram](img/coordinate_system.png)
 
-> Doing that transformation in the vertex shader is more efficient but also more difficult. So we will learn that later.
+The next step is to convert the position from mouse space to NDC space. Use linear mapping to derive an equation for this conversion.
+Modify the example code to calculate the NDC space mouse position and show it on the canvas.
 
-Modify `hello_world.html` and add a function called `m2ndc`. This function takes as input an array of vertices in the mind space and returns a new array of indices in the NDC space. You can either hard-code the dimensions of the mind space or make it as other parameters.
+```JS
+// You can modify this code to show text on the canvas. Using ${} inside a `` string in JS will directly format that variable in the string.
+display.innerHTML = `Mouse: ${x}, ${y}`;
+```
 
-> You will need to learn the basics of JavaScript to write this function. JavaScript syntax is similar to C/C++, but the variable typing is similar to Python.
+Finally, I want to you create a point at the location of mouse click. You can refer to previous exercises to see the code for the buffer management. 
 
-Then, use this new function and render the triangle you make in the mind space.
-
-> Remember that, the array need to be converted to float32 before sending to vertex shader buffer.
 
 ## Submission
 
-Submit your answer to the coordinate space change question and your modified code to BlackBoard.
+Submit your answer to the questions and your modified code to BlackBoard. 
+
+>When submitting the code, you can leave out the `setupShader.js` file. I will use my copy of the file to test your code. So, do not make any change to `setupShader.js`.
 

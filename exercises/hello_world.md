@@ -1,4 +1,4 @@
-# Exercise 2: Hello world
+# Exercise 1: Hello world
 
 The `hello_world.html` file is consisted of the html code and the JavaScript code. I will first go through the code and then give you this exercise instructions.
 

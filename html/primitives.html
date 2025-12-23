@@ -11,12 +11,10 @@
 // Vertex shader source code
 const vertexShaderSource = `
     attribute vec2 aPosition;
-    uniform vec2 dim;
-    vec2 transformedPosition;
 
     void main() {
-        transformedPosition =(vec2(2.0,-2.0) * aPosition) / dim + vec2(-1.0,1.0);
-        gl_Position = vec4(transformedPosition, 0.0, 1.0); 
+        gl_Position = vec4(aPosition, 0.0, 1.0); 
+        gl_PointSize = 5.0; // Point size is defaulted to be 1.0
     }
 `;
 </script>
@@ -33,34 +31,46 @@ const vertexShaderSource = `
 <script type="text/javascript" src="setupShader.js"></script>
 <script>
 
-// Set up geometry data
-const vertices = new Float32Array([
-    100, 100,  // Vertex 1
-    100, 400,  // Vertex 2
-    400, 400   // Vertex 3
-]);
 
-// Create a buffer and upload the vertex data
+// Create a buffer
 const buffer = gl.createBuffer();
+// upload the vertex data
 gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
-
-// Get attribute location and enable it
 const aPositionLocation = gl.getAttribLocation(program, 'aPosition');
 gl.vertexAttribPointer(aPositionLocation, 2, gl.FLOAT, false, 0, 0);
 gl.enableVertexAttribArray(aPositionLocation);
-
-// Pass Uniform Dimensions to Shader
-const dimLocation = gl.getUniformLocation(program, 'dim');
-gl.uniform2f(dimLocation, canvas.width, canvas.height);
 
 // Set up the viewport and clear the canvas
 gl.viewport(0, 0, canvas.width, canvas.height);
 gl.clearColor(0.0, 0.0, 0.0, 1.0);
 gl.clear(gl.COLOR_BUFFER_BIT);
 
-// Draw the triangle
-gl.drawArrays(gl.TRIANGLES, 0, 3);
-    </script>
+// Draw the splitting lines
+const v_lines = new Float32Array([
+    -1.0, 0.0,  // Line 1 start
+    1.0, 0.0,   // Line 1 end
+    0.0, -1.0, // Line 2 start
+    0.0, 1.0,  // Line 2 end
+]);
+gl.bufferData(gl.ARRAY_BUFFER, v_lines, gl.STATIC_DRAW);
+gl.drawArrays(gl.LINES, 0, 4);
+
+// Draw the 4 points
+const v_points = new Float32Array([
+    -0.75, 0.75,  // Vertex 1
+    -0.25, 0.75,  // Vertex 2
+    -0.25, 0.25,   // Vertex 3
+    -0.75, 0.25,   // Vertex 4
+]);
+gl.bufferData(gl.ARRAY_BUFFER, v_points, gl.STATIC_DRAW);
+gl.drawArrays(gl.POINTS, 0, 4);
+
+// TODO: Draw the rectangle outline using line primitives at the top right corner of the canvas
+
+// TODO: Draw the rectangle using gl.TRIANGLES at the bottom left corner of the canvas
+
+// TODO: Draw the rectangle using gl.TRIANGLE_STRIP at the bottom right corner of the canvas
+
+</script>
 </body>
 </html>
