@@ -7,3 +7,4 @@ See this examples online at: https://harviu.github.io/WebGL-Example/.
 ## Exercise Instructions for CIS 367
 - [Exercise 1 (from Overview lecture)](./exercises/environment_setting.md)
 - [Exercise 2 (from Hello world lecture)](./exercises/hello_world.md)
+- [Exercise 3 (2D Coordinate System)](./exercises/2d_coordinate_system.md)
