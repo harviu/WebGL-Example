@@ -1,4 +1,4 @@
-# Exercise 1: Github and Environment Setting
+# Exercise 0: Github and Environment Setting
 
 First, clone this repository to your local machine. All WebGL program files are under the folder `html/`. Locate the file we need to use for this exercise `html/hello_world.html`.
 
