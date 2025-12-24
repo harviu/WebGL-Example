@@ -42,15 +42,15 @@ const vertices = new Float32Array([
     0.5, -0.5,   // Vertex 3
 ]);
 
+// setup the vertex buffer
 const buffer = gl.createBuffer();
 gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
 gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
-
 const aPosition = gl.getAttribLocation(program, "aPosition");
 gl.enableVertexAttribArray(aPosition);
 gl.vertexAttribPointer(aPosition, 2, gl.FLOAT, false, 0, 0);
 
-// setup the transformation matrix
+// creates the buffer transformation matrix
 const transform_matrix = gl.getUniformLocation(program, "transform_matrix");
 
 function setRotationMatrix(rad){
@@ -58,18 +58,18 @@ function setRotationMatrix(rad){
     const sinAngle = Math.sin(rad);
     // Transposed rotation matrix!!!
     return rotationMatrix = new Float32Array([
-            cosAngle, sinAngle, 0.0,
-            -sinAngle,  cosAngle, 0.0,
-            0.0,       0.0,     1.0
+            cosAngle,  sinAngle, 0.0,
+            -sinAngle, cosAngle, 0.0,
+            0.0,       0.0,      1.0
         ]);
 }
 
 function render(angle) {
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT);
-    //calcuating the rotation matrix
+    //calculating the rotation matrix
     const rad = angle * Math.PI / 180;
-    ratationMatrix = setRotationMatrix(rad);
+    const rotationMatrix = setRotationMatrix(rad);
     
     gl.uniformMatrix3fv(transform_matrix, false, rotationMatrix);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
