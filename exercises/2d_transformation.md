@@ -1,6 +1,6 @@
 # Exercise 4: 2D Transformation
 
-You will practice building 2D transformation matrices in this exercise. We are using `rotation.html` as the example code.
+You will practice building 2D transformation matrices in this exercise. We are using `rotation.html` as the example code. I suggest avoid using AI for exercises, as you are learning fundamentals in exercises.
 
 ## Code Explanation
 

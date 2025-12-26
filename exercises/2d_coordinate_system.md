@@ -1,6 +1,6 @@
 # Exercise 3: 2D Coordinate System
 
-We are looking at the same `interaction.html` example for this exercise.
+We are looking at the same `interaction.html` example for this exercise. I suggest avoid using AI for exercises, as you are learning fundamentals in exercises.
 
 ## Coordinate Space Change
 

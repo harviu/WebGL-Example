@@ -1,6 +1,6 @@
 # Exercise 2: Primitives
 
-This exercise will get you used to WebGL primitives. The code example we are using is `primitives.html`. The overall code structure is similar to the hello world example.
+This exercise will get you used to WebGL primitives. The code example we are using is `primitives.html`. The overall code structure is similar to the hello world example. I suggest avoid using AI for exercises, as you are learning fundamentals in exercises.
 
 The canvas is split into four spaces. I showed an example of drawing the four vertices of a rectangle in the top-left corner. Your task is:
 

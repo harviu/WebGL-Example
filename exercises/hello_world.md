@@ -1,6 +1,6 @@
 # Exercise 1: Hello world
 
-The `hello_world.html` file is consisted of the html code and the JavaScript code. I will first go through the code and then give you this exercise instructions.
+The `hello_world.html` file is consisted of the html code and the JavaScript code. I will first go through the code and then give you this exercise instructions. I suggest avoid using AI for exercises, as you are learning fundamentals in exercises.
 
 ## HTML file
 

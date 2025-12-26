@@ -11,7 +11,6 @@
 // Vertex shader source code
 const vertexShaderSource = `
     attribute vec2 aPosition;
-    uniform vec2 dim;
     uniform mat3 mMatrix;
     uniform mat3 pMatrix;
 
@@ -52,15 +51,20 @@ function multiplyMatrix3x3(a, b) {
         for (let row = 0; row < 3; row++) {  
             let sum = 0;
             for (let k = 0; k < 3; k++) {  
+                // sum += a[row][k] * b[k][col];
                 sum += a[k * 3 + row] * b[col * 3 + k];
+                // Remembering that our matrices are stored in column-major order
             }
+            // result[row][col] = sum;
             result[col * 3 + row] = sum;
+            // result in the column-major order too
         }
     }
 
     return result;
 }
 
+// Functions to create transformation matrices we set before
 function setRotationMatrix(angle){
     const rad = angle * Math.PI / 180;
     const cosAngle = Math.cos(rad);
@@ -88,6 +92,7 @@ function setScalingMatrix(sx, sy) {
         ];
 }
 
+// Helper function to set rectangle vertices with width and height
 function setRectangle (width, height) {
     return new Float32Array([
         0, 0, width, 0, 0, height,
@@ -96,8 +101,6 @@ function setRectangle (width, height) {
 }
 
 function drawObject(positions, mMatrix, color) {
-    const buffer = gl.createBuffer();
-
     // pass vertex data
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
@@ -106,6 +109,7 @@ function drawObject(positions, mMatrix, color) {
     // pass vMatrix and color
     gl.uniformMatrix3fv(mMatrixLocation, false, new Float32Array(mMatrix));
     gl.uniform4f(colorLocation, color[0], color[1], color[2], color[3]);
+    
     gl.drawArrays(gl.TRIANGLES, 0, positions.length / 2);
 }
 
@@ -213,6 +217,25 @@ document.addEventListener('keydown', (e)=>{
     drawSoldier(setTranslationMatrix(globalX, globalY));
 }, false);
 
+// Create instruction in html
+const instructions = document.createElement('div');
+instructions.style.position = 'absolute';
+instructions.style.top = '10px';
+instructions.style.left = '520px';
+instructions.style.color = 'black';
+instructions.style.fontFamily = 'Arial, sans-serif';
+instructions.style.fontSize = '14px';
+instructions.style.lineHeight = '1.6';
+instructions.innerHTML = `
+    <h3>Controls:</h3>
+    <p><strong>Movement:</strong></p>
+    <p>W - Move Up<br>S - Move Down<br>A - Move Left<br>D - Move Right</p>
+    <p><strong>Arm & Sword:</strong></p>
+    <p>← - Rotate Arm Left<br>→ - Rotate Arm Right<br>↑ - Swing Sword Up<br>↓ - Swing Sword Down</p>
+`;
+document.body.appendChild(instructions);
+
+// Initial draw
 gl.viewport(0, 0, canvas.width, canvas.height);
 gl.clearColor(0, 0, 0, 1);
 gl.clear(gl.COLOR_BUFFER_BIT);
