@@ -30,7 +30,7 @@ I created two classes `ObjectWebGL` and `Shape` and use these two classes to cre
 
 ![Local coordinate frame for layer 1](./img/hierarchy.png)
 
-You do not need to draw the coordinates using WebGL.
+You do not need to draw the coordinates using WebGL. But you need to annotate the origin and angle for each coordinate system.
 
 ## Transformation
 
