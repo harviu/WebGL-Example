@@ -11,3 +11,4 @@ See this examples online at: https://harviu.github.io/WebGL-Example/.
 - [Exercise 3 (2D coordinate system)](./exercises/2d_coordinate_system.md)
 - [Exercise 4 (2D transformation)](./exercises/2d_transformation.md)
 - [Exercise 5 (Transformation Composition)](./exercises/transformation_composition.pdf)
+- [Exercise 6 (Hierarchical Transformation)](./exercises/hierarchical_transformation.md)

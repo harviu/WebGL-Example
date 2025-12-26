@@ -52,11 +52,9 @@ function multiplyMatrix3x3(a, b) {
             let sum = 0;
             for (let k = 0; k < 3; k++) {  
                 // sum += a[row][k] * b[k][col];
-                sum += a[k * 3 + row] * b[col * 3 + k];
                 // Remembering that our matrices are stored in column-major order
             }
             // result[row][col] = sum;
-            result[col * 3 + row] = sum;
             // result in the column-major order too
         }
     }
@@ -100,70 +98,79 @@ function setRectangle (width, height) {
     ])
 }
 
-function drawObject(positions, mMatrix, color) {
-    // pass vertex data
-    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
-    gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+class Shape {
+    constructor(vertices, mMatrix, color) {
+        this.vertices = vertices;
+        this.mMatrix = mMatrix;
+        this.color = color;
+    }
+    draw(parentMatrix = setIdentityMatrix()) {
+        const buffer = gl.createBuffer();
 
-    // pass vMatrix and color
-    gl.uniformMatrix3fv(mMatrixLocation, false, new Float32Array(mMatrix));
-    gl.uniform4f(colorLocation, color[0], color[1], color[2], color[3]);
-    
-    gl.drawArrays(gl.TRIANGLES, 0, positions.length / 2);
+        // pass vertex data
+        gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.STATIC_DRAW);
+        gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+
+        // pass vMatrix and color
+        const combinedMatrix = multiplyMatrix3x3(parentMatrix, this.mMatrix);
+        gl.uniformMatrix3fv(mMatrixLocation, false, new Float32Array(combinedMatrix));
+        gl.uniform4f(colorLocation, this.color[0], this.color[1], this.color[2], this.color[3]);
+
+        gl.drawArrays(gl.TRIANGLES, 0, this.vertices.length / 2);
+    }
+}   
+
+class ObjectWebGL {
+    constructor(mMatrix = setIdentityMatrix()) {
+        this.shapes = [];
+        this.mMatrix = mMatrix;
+        this.children = [];
+    }
+
+    local_transform(matrix){
+        // TODO: implement this function
+    }
+
+    draw(parentMatrix = setIdentityMatrix()) {
+        const combinedMatrix = multiplyMatrix3x3(parentMatrix, this.mMatrix);
+        for (const shape of this.shapes) {
+            shape.draw(combinedMatrix);
+        }
+        for (const child of this.children) {
+            child.draw(combinedMatrix);
+        }
+    }
 }
 
-function drawSoldier(parentMatrix) {
-    const vHead = setRectangle (20, 25);
-    const headColor = [1, 0.8, 0.6, 1];
-    const headmMatrix = setTranslationMatrix(15,150);
-    drawObject(vHead, multiplyMatrix3x3(parentMatrix, headmMatrix), headColor);
+const soldier = new ObjectWebGL(setTranslationMatrix(200, 150));
+const head = new Shape(setRectangle(20, 25), setTranslationMatrix(15, 150), [1, 0.8, 0.6, 1]);
+const body = new Shape(setRectangle(50, 100), setTranslationMatrix(0, 50), [0.6, 0.6, 0.8, 1]);
+const leftLeg = new Shape(setRectangle(15, 50), setTranslationMatrix(0, 0), [0.5, 0.3, 0.2, 1]);
+const rightLeg = new Shape(setRectangle(15, 50), setTranslationMatrix(35, 0), [0.5, 0.3, 0.2, 1]);    
+soldier.shapes.push(head);
+soldier.shapes.push(body);
+soldier.shapes.push(leftLeg);
+soldier.shapes.push(rightLeg);
 
-    const vBody = setRectangle (50, 100);
-    const bodyColor = [0.6, 0.6, 0.8, 1];
-    const bodymMatrix = setTranslationMatrix(0,50);
-    drawObject(vBody, multiplyMatrix3x3(parentMatrix, bodymMatrix), bodyColor);
-
-    const vLeg = setRectangle (15, 50);
-    const legColor = [0.5, 0.3, 0.2, 1];
-    const leftLegmMatrix = setTranslationMatrix(0,0);
-    drawObject(vLeg, multiplyMatrix3x3(parentMatrix, leftLegmMatrix), legColor);
-    const rightLegmMatrix = setTranslationMatrix(35,0)
-    drawObject(vLeg, multiplyMatrix3x3(parentMatrix, rightLegmMatrix), legColor);
-
-    const armTransMatrix = multiplyMatrix3x3(parentMatrix, setTranslationMatrix(42.5, 140));
-    drawArm(armTransMatrix)
+const arm = new ObjectWebGL(multiplyMatrix3x3(setTranslationMatrix(42.5, 140), setRotationMatrix(-120)));
+arm.updateMatrix = function() {
+    this.mMatrix = multiplyMatrix3x3(this.translationMatrix, setRotationMatrix(this.startAngle + this.angle));
 }
+arm.shapes.push(new Shape(setRectangle(15, 50), setIdentityMatrix(), [0.5, 0.3, 0.2, 1]));
 
-function drawArm(parentMatrix){
-    const startAnlge = -120;
-    const vArm = setRectangle (15, 50);
-    const armColor = [0.5, 0.3, 0.2, 1];
-    const armRotationmatrix = setRotationMatrix(startAnlge + armAngle);
-    let mMatrix = multiplyMatrix3x3(parentMatrix, armRotationmatrix);
-    const swordTransMatrix = setTranslationMatrix(9,43);
-    drawObject(vArm, mMatrix, armColor);
-    mMatrix = multiplyMatrix3x3(mMatrix, swordTransMatrix);
-    drawSword(mMatrix)
-}
+const sword = new ObjectWebGL(multiplyMatrix3x3(setTranslationMatrix(9, 43), setRotationMatrix(110)));
+const blade = new Shape(setRectangle(5, 100), setIdentityMatrix(), [0.9, 0.9, 0.9, 1]);
+const guard = new Shape(setRectangle(15, 6), setTranslationMatrix(-5, 13), [0.9, 0.9, 0.9, 1]);
+const tip = new Shape(new Float32Array([
+    0,100, 5,100, 2.5,110,
+]), setIdentityMatrix(), [1.0, 1.0, 1.0, 1]);
+sword.shapes.push(blade);
+sword.shapes.push(guard); 
+sword.shapes.push(tip);
 
-function drawSword(parentMatrix){
-    const startAnlge = 110;
-    const vBlade = setRectangle(5, 100);
-    const vGuard = setRectangle(15, 6);
-    const guardTranslate = setTranslationMatrix(-5, 13);
-    const bladeColor = [0.9, 0.9, 0.9, 1];
-    const vTip = [
-        0,100, 5,100, 2.5, 110,
-    ];
-    const tipColor = [1.0, 1.0, 1.0, 1];
-    const swordRotationmatrix = setRotationMatrix(startAnlge + swordAngle);
-    let mMatrix = multiplyMatrix3x3(parentMatrix, swordRotationmatrix);
-    drawObject(vBlade, mMatrix, bladeColor);
-    drawObject(vTip, mMatrix, tipColor);
-    drawObject(vGuard, multiplyMatrix3x3(mMatrix, guardTranslate), bladeColor);
-
-}
+soldier.children.push(arm);
+arm.children.push(sword);
 
 // initialize buffer and Location
 const colorLocation = gl.getUniformLocation(program, 'uColor');
@@ -173,7 +180,7 @@ const mMatrixLocation = gl.getUniformLocation(program, "mMatrix");
 gl.enableVertexAttribArray(positionLocation);
 const positionBuffer = gl.createBuffer();
 
-// pass the porjection Matrix
+// pass the projection Matrix
 const pMatrix = [
     2/canvas.width,     0,                  0,
     0,                  2/canvas.height,    0,
@@ -187,34 +194,34 @@ let armAngle = 0, swordAngle = 0;
 // listening to the key events
 document.addEventListener('keydown', (e)=>{
     if (e.key == 'w'){
-        globalY += 10;
+        soldier.local_transform(setTranslationMatrix(0, 10));
     }
     else if (e.key == 's'){
-        globalY -= 10;
+        soldier.local_transform(setTranslationMatrix(0, -10));
     }
     else if (e.key == 'a'){
-        globalX -= 10;
+        soldier.local_transform(setTranslationMatrix(-10, 0));
     }
     else if (e.key == 'd'){
-        globalX += 10;
+        soldier.local_transform(setTranslationMatrix(10, 0));
     }
     else if (e.key == 'ArrowLeft'){
-        armAngle += 10;
+        arm.local_transform(setRotationMatrix(10));
     }
     else if (e.key == 'ArrowRight'){
-        armAngle -= 10;
+        arm.local_transform(setRotationMatrix(-10));
     }
     else if (e.key == 'ArrowUp'){
-        swordAngle += 10;
+        sword.local_transform(setRotationMatrix(10));
     }
     else if (e.key == 'ArrowDown'){
-        swordAngle -= 10;
+        sword.local_transform(setRotationMatrix(-10));
     }
     gl.viewport(0, 0, canvas.width, canvas.height);
     gl.clearColor(0, 0, 0, 1);
     gl.clear(gl.COLOR_BUFFER_BIT);
 
-    drawSoldier(setTranslationMatrix(globalX, globalY));
+    soldier.draw();
 }, false);
 
 // Create instruction in html
@@ -240,7 +247,7 @@ gl.viewport(0, 0, canvas.width, canvas.height);
 gl.clearColor(0, 0, 0, 1);
 gl.clear(gl.COLOR_BUFFER_BIT);
 
-drawSoldier(setIdentityMatrix())
+soldier.draw();
 
 
 </script>
