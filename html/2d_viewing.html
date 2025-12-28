@@ -12,11 +12,12 @@
 const vertexShaderSource = `
     attribute vec2 aPosition;
     uniform mat3 mMatrix;
+    uniform mat3 vMatrix;
     uniform mat3 pMatrix;
 
     void main() {
         vec3 hPosition = vec3(aPosition, 1.0);
-        gl_Position = vec4(pMatrix * mMatrix * hPosition, 1.0); 
+        gl_Position = vec4(pMatrix * vMatrix * mMatrix * hPosition, 1.0); 
         gl_PointSize = 5.0;
     }
 `;
@@ -33,6 +34,8 @@ const vertexShaderSource = `
     `;
 </script>
 <script type="text/javascript" src="setupShader.js"></script>
+<!-- include gl-matrix library for matrix inversion -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.8.1/gl-matrix-min.js"></script>
 <script>
 
 
@@ -51,11 +54,9 @@ function multiplyMatrix3x3(a, b) {
         for (let row = 0; row < 3; row++) {  
             let sum = 0;
             for (let k = 0; k < 3; k++) {  
-                // sum += a[row][k] * b[k][col];
-                // Remembering that our matrices are stored in column-major order
+                sum += a[k * 3 + row] * b[col * 3 + k];
             }
-            // result[row][col] = sum;
-            // result in the column-major order too
+            result[col * 3 + row] = sum;
         }
     }
 
@@ -129,7 +130,7 @@ class ObjectWebGL {
     }
 
     local_transform(matrix){
-        // TODO: implement this function
+        this.mMatrix = multiplyMatrix3x3(this.mMatrix, matrix);
     }
 
     draw(parentMatrix = setIdentityMatrix()) {
@@ -143,7 +144,8 @@ class ObjectWebGL {
     }
 }
 
-const soldier = new ObjectWebGL(setTranslationMatrix(200, 150));
+// make soldier object
+const soldier = new ObjectWebGL(setTranslationMatrix(200, 80));
 const head = new Shape(setRectangle(20, 25), setTranslationMatrix(15, 150), [1, 0.8, 0.6, 1]);
 const body = new Shape(setRectangle(50, 100), setTranslationMatrix(0, 50), [0.6, 0.6, 0.8, 1]);
 const leftLeg = new Shape(setRectangle(15, 50), setTranslationMatrix(0, 0), [0.5, 0.3, 0.2, 1]);
@@ -172,22 +174,43 @@ sword.shapes.push(tip);
 soldier.children.push(arm);
 arm.children.push(sword);
 
+// make stones as the background
+stones = new ObjectWebGL();
+for (let i = 0; i < 500; i++) {
+    const x = Math.random() * 1000 - 250;
+    const y = Math.random() * 180;
+    const width = Math.random() * 20 + 10;
+    const height = Math.random() * 15 + 5;
+    const scale = 1 - (y / 250);
+    const scaledWidth = width * scale;
+    const scaledHeight = height * scale;
+    stones.shapes.push(new Shape(setRectangle(scaledWidth, scaledHeight), setTranslationMatrix(x, y), [0.5, 0.5, 0.5, 1]));
+}
+
 // initialize buffer and Location
 const colorLocation = gl.getUniformLocation(program, 'uColor');
 const positionLocation = gl.getAttribLocation(program, 'aPosition');
-const pMatrixLocation = gl.getUniformLocation(program, "pMatrix");
 const mMatrixLocation = gl.getUniformLocation(program, "mMatrix");
+const vMatrixLocation = gl.getUniformLocation(program, "vMatrix");
+const pMatrixLocation = gl.getUniformLocation(program, "pMatrix");
 gl.enableVertexAttribArray(positionLocation);
 const positionBuffer = gl.createBuffer();
+
+// setup and pass the camera and view matrices
+let cMatrix = mat3.create();
+// make camera look at the center of the canvas
+mat3.translate(cMatrix, cMatrix, [250, 250]);
+let vMatrix = mat3.create();
+mat3.invert(vMatrix, cMatrix);
+gl.uniformMatrix3fv(vMatrixLocation, false, vMatrix);
 
 // pass the projection Matrix
 const pMatrix = [
     2/canvas.width,     0,                  0,
     0,                  2/canvas.height,    0,
-    -1,                 -1,                 1,
+    0,                  0,                  1,
 ]
 gl.uniformMatrix3fv(pMatrixLocation, false, pMatrix);
-
 
 // listening to the key events
 document.addEventListener('keydown', (e)=>{
@@ -215,10 +238,17 @@ document.addEventListener('keydown', (e)=>{
     else if (e.key == 'ArrowDown'){
         sword.local_transform(setRotationMatrix(-10));
     }
+    else if (e.key == '['){
+        // TODO: move camera left
+    }
+    else if (e.key == ']'){
+        // TODO: move camera right      
+    }
     gl.viewport(0, 0, canvas.width, canvas.height);
     gl.clearColor(0, 0, 0, 1);
     gl.clear(gl.COLOR_BUFFER_BIT);
 
+    stones.draw();
     soldier.draw();
 }, false);
 
@@ -237,6 +267,8 @@ instructions.innerHTML = `
     <p>W - Move Up<br>S - Move Down<br>A - Move Left<br>D - Move Right</p>
     <p><strong>Arm & Sword:</strong></p>
     <p>← - Rotate Arm Left<br>→ - Rotate Arm Right<br>↑ - Swing Sword Up<br>↓ - Swing Sword Down</p>
+    <p><strong>Camera Translation:</strong></p>
+    <p>[ - Move Camera Left<br>] - Move Camera Right</p>
 `;
 document.body.appendChild(instructions);
 
@@ -245,6 +277,7 @@ gl.viewport(0, 0, canvas.width, canvas.height);
 gl.clearColor(0, 0, 0, 1);
 gl.clear(gl.COLOR_BUFFER_BIT);
 
+stones.draw();
 soldier.draw();
 
 

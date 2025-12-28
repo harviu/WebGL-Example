@@ -13,7 +13,7 @@ Similar to passing vertex positions, we use a buffer to pass color array from CP
 const color = new Float32Array([
     1,0,0,1,  // Color 1
     0,1,0,1,  // Color 2
-    0,0,1,1,   // Color 3
+    0,0,1,1,  // Color 3
 ]);
 // vertex color buffer
 const color_buffer = gl.createBuffer();

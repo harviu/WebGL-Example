@@ -175,7 +175,7 @@ The error message is: `ERROR: 0:4: 'void' : syntax error`. This means the error 
 
 Understand this code and finish the following tasks:
 
-1. Change the vertex coordinates of the triangle. See how triangle changes its shape.
+1. Change the vertex coordinates of the triangle. See how triangle changes its shape and find out the visible drawing range of the canvas.
 
 2. In the vertex shader, change the third dimension of the vertex coordinates to other values. In your submission, write done what is the effect of changing that value.
 
