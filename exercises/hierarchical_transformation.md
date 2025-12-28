@@ -15,7 +15,7 @@ This example is slightly different than the examples before. In the vertex shade
 ```C
 attribute vec2 aPosition;
 uniform mat3 mMatrix; // mMatrix is the composited transformation matrix
-uniform mat3 pMatrix; // pMatrix (projection matrix) converts objects from "mind space" to NDC
+uniform mat3 pMatrix; // pMatrix (projection matrix) converts objects from world space to NDC
 
 void main() {
     vec3 hPosition = vec3(aPosition, 1.0);

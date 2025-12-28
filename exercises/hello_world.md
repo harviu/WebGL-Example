@@ -61,8 +61,8 @@ We hide some of the tedious initialization work inside the `html/setupShaders.js
 
 This loads the script from an external file, while inline scripts are written directly between `<script>` tags.
 
-```html
-<script>
+We first set up the vertices for the triangle:
+```JS
 // Set up triangle vertices
 // const is JS constant variable
 // We use Float32Array here because GPU is expecting 32-bit floating point number
@@ -71,35 +71,39 @@ const vertices = new Float32Array([
     -0.5, -0.5,  // Vertex 2
     0.5, -0.5   // Vertex 3
 ]);
+```
 
+And then, we need to setup a buffer on GPU, so that the vertex data we prepared in the CPU can be transferred. These six lines code are for the setup. What each line does are explained in the comments:
+
+```JS
 // Create a buffer and upload the vertex data
 // A buffer in WebGL is a memory object that stores vertex data, indices, or other information  on the GPU. Buffers are used to efficiently transfer large amounts of data from the CPU to the GPU for rendering. 
-
+// This tells webGL that we are going to use an array buffer on GPU to hold data
 const buffer = gl.createBuffer();
-// This tells webGL that we are going to use the buffer called "buffer", this "buffer" is of gl.ARRAY_BUFFER type (we are going to introduce other types later)
+// WebGL works like a state machine, after we bind the buffer, all other functions are applied to the current bound buffer
 gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
 // Moves the vertices we created to the GPU buffer
 gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
-
 // getAttribLocation finds a variable "aPosition" in the vertex shader
 // We will talk about it more when moving to vertex shader
 // program is an object we initialize in setupShader.js
 // The program links three stages
 const aPositionLocation = gl.getAttribLocation(program, 'aPosition');
-
-// This function setup the array format for aPosition, when triangle vertices are mapped to GPU vertex shader, we need to know how that array is formatted. For example, what is the dimensionality of the vertex (2 in our case) The complete list of parameters is:
-/**
- * @param {number} aPositionLocation - The location of the position attribute in the shader program.
- * @param {number} size - The number of components per vertex attribute (2 for 2D coordinates).
- * @param {WebGLRenderingContext.FLOAT} type - The data type of each component (gl.FLOAT for floating-point values).
- * @param {boolean} normalized - Whether to normalize the data (false means no normalization).
- * @param {number} stride - The byte offset between consecutive vertex attributes (0 means tightly packed).
- * @param {number} offset - The offset in bytes of the first component in the buffer (0 means start from the beginning).
- */
+// This function setup the array format for the variable aPosition, when triangle vertices are mapped to GPU vertex shader, we need to know how that array is formatted. For example, the dimensionality of the vertex is 2. They are floating point numbers. The last three arguments are: whether to normalize the data, access stride, and access offset.
 gl.vertexAttribPointer(aPositionLocation, 2, gl.FLOAT, false, 0, 0);
-// Finally, this line says we are mapping the previously bound buffer to the vertex shader variable "aPosition"
+// Finally, this line switches the aPosition from "off" to "on".
 gl.enableVertexAttribArray(aPositionLocation);
+```
 
+Once the buffer are setup, we can reuse it to draw other objects by simply transfer other data using:
+
+```JS
+gl.bufferData(gl.ARRAY_BUFFER, other_vertices, gl.STATIC_DRAW);
+```
+
+Finally, we can clear the canvas and draw the triangle.
+
+```JS
 // These functions setup the size of canvas and background color, we will talk about it later
 gl.viewport(0, 0, canvas.width, canvas.height);
 gl.clearColor(0.0, 0.0, 0.0, 1.0);
@@ -107,7 +111,6 @@ gl.clear(gl.COLOR_BUFFER_BIT);
 
 // Draw the triangle using the vertex array.
 gl.drawArrays(gl.TRIANGLES, 0, 3);
-</script>
 ```
 
 ### Geometry Stage (Vertex Shader)
@@ -178,4 +181,4 @@ Understand this code and finish the following tasks:
 
 3. In the fragment shader, change the color of the triangle to anything you like. 
 
-Finally, screenshot the rendered triangle with now color and shape, submit that with your finding from step 2 to BlackBoard.
+Finally, screenshot the rendered triangle with new color and shape, submit that with your finding from step 2 to BlackBoard.

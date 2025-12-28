@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Two Triangles</title>
+</head>
+<body>
+    <canvas id="webgl-canvas" width="500" height="500"></canvas>
+    <script>
+    // Vertex shader source code
+    const vertexShaderSource = `
+        attribute vec2 aPosition;
+        attribute vec4 vColor;
+        varying vec4 fColor;
+
+        void main() {
+            fColor = vColor;
+            gl_Position = vec4(aPosition, 0, 1.0);
+            gl_PointSize = 5.0;
+        }
+    `;
+    </script>
+
+    <script>
+    // Fragment shader source code
+        const fragmentShaderSource = `
+            precision mediump float;
+            varying vec4 fColor;
+        
+            void main() {
+                gl_FragColor = fColor;
+            }
+        `;
+    </script>
+    <script type="text/javascript" src="setupShader.js"></script>
+    <script>
+    // Set up the viewport and clear the canvas
+    gl.viewport(0, 0, canvas.width, canvas.height);
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+
+    // Set up geometry data
+    const vertices = new Float32Array([
+        0.0,  0.5,  // Vertex 1
+        -0.5, -0.5,  // Vertex 2
+        0.5, -0.5   // Vertex 3
+    ]);
+
+    // Set up color data
+    const color = new Float32Array([
+        1,0,0,1,  // Color 1
+        0,1,0,1,  // Color 2
+        0,0,1,1,   // Color 3
+    ]);
+
+    // vertex position buffer
+    const position_buffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, position_buffer);
+    const aPositionLocation = gl.getAttribLocation(program, 'aPosition');
+    gl.vertexAttribPointer(aPositionLocation, 2, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(aPositionLocation);
+    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+
+    // vertex color buffer
+    const color_buffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, color_buffer);
+    const vertex_color_location = gl.getAttribLocation(program, 'vColor');
+    gl.vertexAttribPointer(vertex_color_location, 4, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(vertex_color_location);
+    gl.bufferData(gl.ARRAY_BUFFER, color, gl.STATIC_DRAW);
+
+    // Draw the triangle
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+    // point
+    const point = new Float32Array([
+        0.1, 0.1,  
+    ]);
+
+    const pointColor = new Float32Array([
+        1,1,1,1,  
+    ]);
+
+    // Create a buffer and upload the vertex data
+    gl.bindBuffer(gl.ARRAY_BUFFER, position_buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, point, gl.STATIC_DRAW);
+
+    // Create a buffer and upload the color data
+    gl.bindBuffer(gl.ARRAY_BUFFER, color_buffer);
+    gl.bufferData(gl.ARRAY_BUFFER, pointColor, gl.STATIC_DRAW);
+
+    // Draw the point
+    gl.drawArrays(gl.POINTS, 0, 1);
+
+    function area(p1,p2,p3){
+        return Math.abs((p1[0]*(p2[1]-p3[1]) + p2[0]*(p3[1]-p1[1]) + p3[0]*(p1[1]-p2[1]))/2.0); 
+    }
+
+
+    </script>
+</body>
+</html>

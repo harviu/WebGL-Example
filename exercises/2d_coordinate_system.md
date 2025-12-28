@@ -4,10 +4,10 @@ We are looking at the same `interaction.html` example for this exercise. I sugge
 
 ## Coordinate Space Change
 
-The triangle is directly defined in the NDC space for the Hello World example, but you do not like this space when you are creating the objects. You find it is natural to define all axes from 0 to 100. So you make a new "mind space". The bottom-left corner of this space is [0, 0], top-right corner is [100, 100]. Can you convert the triangle (
+The triangle is directly defined in the NDC space for the Hello World example, but you do not like this space when you are creating the objects. You find it is natural to define all axes from 0 to 100. So you make a new "world space". The bottom-left corner of this space is [0, 0], top-right corner is [100, 100]. Can you project the triangle (
     (0.0,  0.5), 
     (-0.5, -0.5), 
-    (0.5, -0.5) ) we defined in the Hello World example to this new "mind space"? Show your steps of calculation in the submission
+    (0.5, -0.5) ) we defined in the Hello World example to this new "world space"? Show your steps of calculation in the submission
 
 ## Mouse Interaction
 

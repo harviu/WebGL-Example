@@ -12,3 +12,4 @@ See this examples online at: https://harviu.github.io/WebGL-Example/.
 - [Exercise 4 (2D transformation)](./exercises/2d_transformation.md)
 - [Exercise 5 (Transformation Composition)](./exercises/transformation_composition.pdf)
 - [Exercise 6 (Hierarchical Transformation)](./exercises/hierarchical_transformation.md)
+- [Exercise 7 (Color Interpolation)](./exercises/color_interpolation.md)
