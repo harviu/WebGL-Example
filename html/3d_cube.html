@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Cube</title>
+</head>
+<body>
+    <canvas id="webgl-canvas" width="500" height="500"></canvas>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.8.1/gl-matrix-min.js"></script>
+<script>
+// Vertex shader source code
+const vertexShaderSource = `
+    attribute vec3 aPosition;
+    attribute vec3 vColor;
+    uniform mat4 mMatrix, vMatrix, pMatrix;
+    varying vec3 fColor;
+
+    void main() {
+        fColor = vColor;
+        vec4 hPosition = vec4(aPosition, 1.0);
+        gl_Position = pMatrix * vMatrix * mMatrix * hPosition;
+    }
+`;
+</script>
+<script>
+// Fragment shader source code
+const fragmentShaderSource = `
+    precision mediump float;
+    varying vec3 fColor;
+
+    void main() {
+        gl_FragColor = vec4(fColor, 1.0);
+    }
+`;
+</script>
+<script type="text/javascript" src="setupShader.js"></script>
+<script>
+// Set up geometry data
+const vertices = new Float32Array([
+    0.5,  0.5,  -.5,  // right, top,    far
+    -0.5,  0.5,  -.5, // left,  top,    far
+    -0.5, -0.5,  -.5, // left,  bottom, far
+    0.5, -0.5,  -.5,  // right, bottom, far
+    0.5,  0.5,  .5,   // right, top,    near
+    -0.5,  0.5,  .5,  // left,  top,    near
+    -0.5, -0.5,  .5,  // left,  bottom, near
+    0.5, -0.5,  .5    // right, bottom, near
+]);
+// colors for each vertex
+const colors = new Float32Array([
+    1.0, 0.0, 0.0,
+    0.0, 1.0, 0.0,
+    0.0, 0.0, 1.0,
+    1.0, 0.0, 0.0,
+    1.0, 0.0, 0.0,
+    0.0, 1.0, 0.0,
+    0.0, 0.0, 1.0,
+    1.0, 0.0, 0.0	
+]);
+// Indices need to be Unsigned Short Array
+const indices = new Uint16Array([
+    0,1,2, // far face
+    0,2,3, // far face
+    0,3,7, // right face
+    0,7,4, // right face
+    6,2,3, // bottom face
+    6,3,7, // bottom face
+    5,1,2, // left face
+    5,2,6, // left face
+    5,1,0, // top face
+    5,0,4, // top face
+    5,6,7, // near face
+    5,7,4  // near face
+]);
+
+// Create a buffer and upload the vertex data
+const vertex_buffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
+gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+const aPositionLocation = gl.getAttribLocation(program, 'aPosition');
+gl.vertexAttribPointer(aPositionLocation, 3, gl.FLOAT, false, 0, 0);
+gl.enableVertexAttribArray(aPositionLocation);
+
+// Create a buffer and upload the color data
+const color_buffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, color_buffer);
+gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW);
+const aColorLocation = gl.getAttribLocation(program, 'vColor');
+gl.vertexAttribPointer(aColorLocation, 3, gl.FLOAT, false, 0, 0);
+gl.enableVertexAttribArray(aColorLocation);
+
+// Create an index buffer and upload the index data
+const index_buffer = gl.createBuffer();
+gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, index_buffer);
+gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
+
+// MVP matrices locations
+const mMatrixLocation = gl.getUniformLocation(program, "mMatrix");
+const vMatrixLocation = gl.getUniformLocation(program, "vMatrix");
+const pMatrixLocation = gl.getUniformLocation(program, "pMatrix");
+
+// setup and pass the camera and view matrices
+let vMatrix = mat4.create();
+gl.uniformMatrix4fv(vMatrixLocation, false, vMatrix);
+let pMatrix = mat4.create();
+gl.uniformMatrix4fv(pMatrixLocation, false, pMatrix);
+let mMatrix = mat4.create();
+gl.uniformMatrix4fv(mMatrixLocation, false, mMatrix);
+
+function draw(){
+    // Set up the viewport and clear the canvas
+    gl.viewport(0, 0, canvas.width, canvas.height);
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.enable(gl.DEPTH_TEST);
+
+    // Draw the rectangle using the index buffer
+    // I do not understand why in drawArrays, 
+    // offset is before the count and in drawElements, count is before offset...
+    gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
+}
+
+document.addEventListener('keydown', (e)=>{
+    if (e.key == 'w'){
+    }
+    else if (e.key == 's'){
+    }
+    else if (e.key == 'a'){
+    }
+    else if (e.key == 'd'){
+    }
+    else if (e.key == 'q'){
+    }
+    else if (e.key == 'e'){
+    }
+    else if (e.key == 'ArrowLeft'){
+    }
+    else if (e.key == 'ArrowRight'){
+    }
+    else if (e.key == 'ArrowUp'){
+    }
+    else if (e.key == 'ArrowDown'){
+    }
+    draw();
+}, false);
+
+const instructions = document.createElement('div');
+instructions.style.position = 'absolute';
+instructions.style.top = '10px';
+instructions.style.left = '520px';
+instructions.style.color = 'black';
+instructions.style.fontFamily = 'Arial, sans-serif';
+instructions.style.fontSize = '14px';
+instructions.style.lineHeight = '1.6';
+instructions.innerHTML = `
+    <h3>Controls:</h3>
+    <p>W/S: Rotate Up/Down</p>
+    <p>A/D: Rotate Left/Right</p>
+    <p>Q/E: Rotate CCW/CW</p>
+`;
+document.body.appendChild(instructions);
+
+draw();
+
+</script>
+</body>
+</html>

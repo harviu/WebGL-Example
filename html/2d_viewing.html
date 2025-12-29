@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interaction</title>
+    <title>2D Viewing</title>
 </head>
 <body>
     <canvas id="webgl-canvas" width="500" height="500"></canvas>
-    <script>
+<!-- include gl-matrix library for matrix inversion -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.8.1/gl-matrix-min.js"></script>
+<script>
 // Vertex shader source code
 const vertexShaderSource = `
     attribute vec2 aPosition;
@@ -34,8 +36,6 @@ const vertexShaderSource = `
     `;
 </script>
 <script type="text/javascript" src="setupShader.js"></script>
-<!-- include gl-matrix library for matrix inversion -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.8.1/gl-matrix-min.js"></script>
 <script>
 
 
@@ -199,6 +199,8 @@ const positionBuffer = gl.createBuffer();
 // setup and pass the camera and view matrices
 let cMatrix = mat3.create();
 // make camera look at the center of the canvas
+// glMatrix library does post-multiplication by default
+// So, C = C * T(250, 250)
 mat3.translate(cMatrix, cMatrix, [250, 250]);
 let vMatrix = mat3.create();
 mat3.invert(vMatrix, cMatrix);

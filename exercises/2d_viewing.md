@@ -43,6 +43,8 @@ This should now be self-explanatory. **Note that the MVP matrix is multiplied in
 // Initialize identity matrix
 let cMatrix = mat3.create();
 // make camera look at the center of the canvas
+// glMatrix library does post-multiplication by default
+// So, C = C * T(250, 250)
 mat3.translate(cMatrix, cMatrix, [250, 250]);
 let vMatrix = mat3.create();
 mat3.invert(vMatrix, cMatrix);
