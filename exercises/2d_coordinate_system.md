@@ -11,8 +11,7 @@ The triangle is directly defined in the NDC space for the Hello World example, b
 
 ## Mouse Interaction
 
-I already implemented the mouse event listener and callback function code in the example. However, the current code only prints out the mouse position in the webpage. Can you try clicking on the canvas and find out what is the coordinate system for the mouse space? You can draw a similar diagram to the one I showed in class:
-![Screen coordinate system diagram](img/coordinate_system.png)
+I already implemented the mouse event listener and callback function code in the example. However, the current code only prints out the mouse position in the webpage. Can you try clicking on the canvas and find out what is the coordinate system for the mouse space? You can draw a similar diagram to the one I showed in class the video for the screen space.
 
 The next step is to convert the position from mouse space to NDC space. Use linear mapping to derive an equation for this conversion.
 Modify the example code to calculate the NDC space mouse position and show it on the canvas.
