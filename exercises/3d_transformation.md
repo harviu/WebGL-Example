@@ -44,12 +44,13 @@ This is our first 3D example. First, I want to show some differences between 2D 
 
 ## Tasks
 
-The purpose of this exercise is to get you used to 3D transformations and glMatrix library. I already imported the library in the example code. You need to implement the key events for WASD and QE to rotate the cube. W/S will rotate the cube up and down, A/D left and right, Q/E CCW and CW. Think of what rotation axis you should use for these rotations. If you want to rotate around x axis, the glMatrix function call is:
-```JS
-mat4.rotateX(out_matrix, in_matrix, degree);
-```
-Remember in 3D, your transformation matrix is 4x4 (mat4). 
+1. The purpose of this exercise is to get you used to 3D transformations and glMatrix library. I already imported the library in the example code. You need to implement the key events for WASD and QE to rotate the cube. W/S will rotate the cube up and down, A/D left and right, Q/E CCW and CW. Think of what rotation axis you should use for these rotations. If you want to rotate around x axis, the glMatrix function call is:
+    ```JS
+    mat4.rotateX(out_matrix, in_matrix, degree);
+    ```
+    Remember in 3D, your transformation matrix is 4x4 (mat4). 
 
-Finish this task and submit to BlackBoard.
+2. For a point at (1, 1, -1), if we rotate the point around x axis by 90 degree, what is the new point position? Calculate this using the equations from the class.
+
 
 
