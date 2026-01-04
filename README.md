@@ -16,4 +16,5 @@ See this examples online at: https://harviu.github.io/WebGL-Example/.
 - [Exercise 8 (2D Viewing)](./exercises/2d_viewing.md)
 - [Exercise 9 (3D Transformation)](./exercises/3d_transformation.md)
 - [Exercise 10 (3D Viewing and Projection)](./exercises/3d_viewing_projection.md)
-- [Exercise 11 (Visibility)](./exercises/visibility.md)
+- [Exercise 11 (Normal Vector)](./exercises/normal_vector.md)
+- [Exercise 12 (Visibility)](./exercises/visibility.md)

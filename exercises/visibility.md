@@ -1,4 +1,4 @@
-# Exercise 11: 3D Viewing and Projection
+# Exercise 12: Visibility
 
 This exercise focuses on 3D Viewing and Transformation. Please use the example `3d_cube.html`. Please use the exercise 10 result codes where you finished the view and projection for this exercise.
 
