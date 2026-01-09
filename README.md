@@ -18,3 +18,4 @@ See this examples online at: https://harviu.github.io/WebGL-Example/.
 - [Exercise 10 (3D Viewing and Projection)](./exercises/3d_viewing_projection.md)
 - [Exercise 11 (Normal Vector)](./exercises/normal_vector.md)
 - [Exercise 12 (Visibility)](./exercises/visibility.md)
+- [Exercise 13 (Lighting)](./exercises/lighting.md)

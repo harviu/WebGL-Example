@@ -102,19 +102,22 @@ const pMatrixLocation = gl.getUniformLocation(program, "pMatrix");
 
 // setup and pass the camera and view matrices
 let vMatrix = mat4.create();
-gl.uniformMatrix4fv(vMatrixLocation, false, vMatrix);
 let pMatrix = mat4.create();
-gl.uniformMatrix4fv(pMatrixLocation, false, pMatrix);
 let mMatrix = mat4.create();
-gl.uniformMatrix4fv(mMatrixLocation, false, mMatrix);
 
 
 function draw(){
     // Set up the viewport and clear the canvas
     gl.viewport(0, 0, canvas.width, canvas.height);
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
-    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     gl.enable(gl.DEPTH_TEST);
+    gl.depthFunc(gl.LESS);
+    
+    // pass MVP matrices to the shader
+    gl.uniformMatrix4fv(vMatrixLocation, false, vMatrix);
+    gl.uniformMatrix4fv(pMatrixLocation, false, pMatrix);
+    gl.uniformMatrix4fv(mMatrixLocation, false, mMatrix);
 
     // Draw the rectangle using the index buffer
     // I do not understand why in drawArrays, 

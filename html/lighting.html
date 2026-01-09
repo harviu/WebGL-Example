@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lighting</title>
+</head>
+<body>
+    <canvas id="webgl-canvas" width="500" height="500"></canvas>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gl-matrix/2.8.1/gl-matrix-min.js"></script>
+<script>
+// Vertex shader source code
+const vertexShaderSource = `
+    attribute vec3 aPosition, aNormal;
+    uniform mat4 mMatrix, vMatrix, pMatrix;
+    uniform mat3 nMatrix;
+    uniform float shininess;
+    uniform vec3 lightPosition, eyePosition, I, Ia, Ka, Kd, Ks;
+    varying vec3 fColor;
+
+    void main() {
+        vec4 hPosition = vec4(aPosition, 1.0);
+        vec4 wPosition = mMatrix * hPosition;
+        // TODO: implement Gouraud shading
+        gl_Position = pMatrix * vMatrix * wPosition;
+    }
+`;
+</script>
+<script>
+// Fragment shader source code
+const fragmentShaderSource = `
+    precision mediump float;
+    varying vec3 fColor;
+
+    void main() {
+        gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0); // white color placeholder
+    }
+`;
+</script>
+<script type="text/javascript" src="setupShader.js"></script>
+<script>
+// Set up geometry data
+const vertices = new Float32Array([
+    // back face
+    0.5,  0.5,  -.5,  // right, top,    far
+    -0.5,  0.5,  -.5, // left,  top,    far
+    -0.5, -0.5,  -.5, // left,  bottom, far
+    0.5,  0.5,  -.5,  // right, top,    far
+    -0.5, -0.5,  -.5, // left,  bottom, far
+    0.5, -0.5,  -.5,  // right, bottom, far
+    // front face
+    0.5,  0.5,  .5,   // right, top,    near
+    -0.5,  0.5,  .5,  // left,  top,    near
+    -0.5, -0.5,  .5,  // left,  bottom, near
+    0.5,  0.5,  .5,   // right, top,    near
+    -0.5, -0.5,  .5,  // left,  bottom, near
+    0.5, -0.5,  .5,    // right, bottom, near
+    // left face
+    -0.5,  0.5,  -.5, // left,  top,    far
+    -0.5,  0.5,  .5,  // left,  top,    near
+    -0.5, -0.5,  .5,  // left,  bottom, near
+    -0.5, -0.5,  -.5, // left,  bottom, far
+    -0.5,  0.5,  -.5, // left,  top,    far
+    -0.5, -0.5,  .5, // left, bottom, near
+    // right face
+    0.5,  0.5,  -.5, // right, top,    far
+    0.5,  0.5,  .5,  // right, top,    near
+    0.5, -0.5,  .5,  // right, bottom, near
+    0.5, -0.5,  -.5, // right, bottom, far
+    0.5,  0.5,  -.5, // right, top,    far
+    0.5, -0.5,  .5, // right, bottom, near
+    // top face
+    0.5,  0.5,  -.5,  // right, top,    far
+    -0.5,  0.5,  -.5, // left,  top,    far
+    -0.5,  0.5,  .5,  // left,  top,    near
+    0.5,  0.5,  -.5,  // right, top,    far
+    -0.5,  0.5,  .5,  // left,  top,    near
+    0.5,  0.5,  .5,   // right, top,    near
+    // bottom face
+    0.5, -0.5,  -.5,  // right, bottom, far
+    -0.5, -0.5,  -.5, // left,  bottom, far
+    -0.5, -0.5,  .5,  // left,  bottom, near
+    0.5, -0.5,  -.5,  // right, bottom, far
+    -0.5, -0.5,  .5,  // left,  bottom, near
+    0.5, -0.5,  .5   // right, bottom, near
+])
+
+// normals for each vertex
+const normals = new Float32Array([
+    // TODO: fill in normal data
+]);
+
+// define shading parameters
+const Ka = [1.0, 0.0, 0.0]; 
+const Kd = [0.8, 0.0, 0.0]; 
+const Ks = [1.0, 1.0, 1.0]; 
+const shininess = 32.0;
+const lightPosition = [0.0, 0.0, 3.0];
+const eyePosition = [0.0, 0.0, 5.0];
+const I = [1.0, 1.0, 1.0];
+const Ia = [0.1, 0.1, 0.1];
+
+
+// Create a buffer and upload the vertex data
+const vertex_buffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
+gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+const aPositionLocation = gl.getAttribLocation(program, 'aPosition');
+gl.vertexAttribPointer(aPositionLocation, 3, gl.FLOAT, false, 0, 0);
+gl.enableVertexAttribArray(aPositionLocation);
+
+// TODO: Create a buffer and upload the normal data
+const normal_buffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, normal_buffer);
+gl.bufferData(gl.ARRAY_BUFFER, normals, gl.STATIC_DRAW);
+const aNormalLocation = gl.getAttribLocation(program, 'aNormal');
+gl.vertexAttribPointer(aNormalLocation, 3, gl.FLOAT, false, 0, 0);
+gl.enableVertexAttribArray(aNormalLocation);
+
+// MVP matrices locations
+const mMatrixLocation = gl.getUniformLocation(program, "mMatrix");
+const vMatrixLocation = gl.getUniformLocation(program, "vMatrix");
+const pMatrixLocation = gl.getUniformLocation(program, "pMatrix");
+// Normal matrix location
+const nMatrixLocation = gl.getUniformLocation(program, "nMatrix");
+// Shading parameters locations
+const shininessLocation = gl.getUniformLocation(program, "shininess");
+const lightPositionLocation = gl.getUniformLocation(program, "lightPosition");
+const eyePositionLocation = gl.getUniformLocation(program, "eyePosition");
+const ILocation = gl.getUniformLocation(program, "I");
+const IaLocation = gl.getUniformLocation(program, "Ia");
+const KaLocation = gl.getUniformLocation(program, "Ka");
+const KdLocation = gl.getUniformLocation(program, "Kd");
+const KsLocation = gl.getUniformLocation(program, "Ks");
+// pass shading parameters to shader
+gl.uniform1f(shininessLocation, shininess);
+gl.uniform3fv(lightPositionLocation, lightPosition);
+gl.uniform3fv(eyePositionLocation, eyePosition);
+gl.uniform3fv(ILocation, I);
+gl.uniform3fv(IaLocation, Ia);
+gl.uniform3fv(KaLocation, Ka);
+gl.uniform3fv(KdLocation, Kd);
+gl.uniform3fv(KsLocation, Ks);
+
+// setup and pass the camera and view matrices
+let vMatrix = mat4.create();
+vMatrix = mat4.lookAt(vMatrix, eyePosition, [0,0,0], [0,1,0]);
+let pMatrix = mat4.create();
+pMatrix = mat4.perspective(pMatrix, Math.PI/4, 1, 0.1, 100);
+let mMatrix = mat4.create();
+
+function draw(){
+    // TODO: compute normal matrix
+    let nMatrix = mat3.create();
+
+    // pass normal matrix to shader
+    gl.uniformMatrix3fv(nMatrixLocation, false, nMatrix);
+
+    // pass MVP matrices to the shader
+    gl.uniformMatrix4fv(vMatrixLocation, false, vMatrix);
+    gl.uniformMatrix4fv(pMatrixLocation, false, pMatrix);
+    gl.uniformMatrix4fv(mMatrixLocation, false, mMatrix);
+
+    // Set up the viewport and clear the canvas
+    gl.viewport(0, 0, canvas.width, canvas.height);
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    gl.enable(gl.DEPTH_TEST);
+    gl.depthFunc(gl.LESS);
+
+    gl.drawArrays(gl.TRIANGLES, 0, vertices.length / 3);
+}
+
+document.addEventListener('keydown', (e)=>{
+    if (e.key == 'w'){
+        mat4.rotateX(mMatrix, mMatrix, 0.1);
+    }
+    else if (e.key == 's'){
+        mat4.rotateX(mMatrix, mMatrix, -0.1);
+    }
+    else if (e.key == 'a'){
+        mat4.rotateY(mMatrix, mMatrix, 0.1);
+    }
+    else if (e.key == 'd'){
+        mat4.rotateY(mMatrix, mMatrix, -0.1);
+    }
+    else if (e.key == 'q'){
+        mat4.rotateZ(mMatrix, mMatrix, 0.1);
+    }
+    else if (e.key == 'e'){
+        mat4.rotateZ(mMatrix, mMatrix, -0.1);
+    }
+    else if (e.key == 'ArrowLeft'){
+        let cameraRotation = mat4.create();
+        mat4.rotateY(cameraRotation, cameraRotation, 0.1);
+        mat4.invert(cameraRotation, cameraRotation);
+        mat4.multiply(vMatrix, cameraRotation, vMatrix);  
+    }
+    else if (e.key == 'ArrowRight'){
+        let cameraRotation = mat4.create();
+        mat4.rotateY(cameraRotation, cameraRotation, -0.1);
+        mat4.invert(cameraRotation, cameraRotation);
+        mat4.multiply(vMatrix, cameraRotation, vMatrix);  
+    }
+    else if (e.key == 'ArrowUp'){
+        let cameraRotation = mat4.create();
+        mat4.rotateX(cameraRotation, cameraRotation, 0.1);
+        mat4.invert(cameraRotation, cameraRotation);
+        mat4.multiply(vMatrix, cameraRotation, vMatrix);  
+    }
+    else if (e.key == 'ArrowDown'){
+        let cameraRotation = mat4.create();
+        mat4.rotateX(cameraRotation, cameraRotation, -0.1);
+        mat4.invert(cameraRotation, cameraRotation);
+        mat4.multiply(vMatrix, cameraRotation, vMatrix);  
+    }
+    draw();
+}, false);
+
+const instructions = document.createElement('div');
+instructions.style.position = 'absolute';
+instructions.style.top = '10px';
+instructions.style.left = '520px';
+instructions.style.color = 'black';
+instructions.style.fontFamily = 'Arial, sans-serif';
+instructions.style.fontSize = '14px';
+instructions.style.lineHeight = '1.6';
+instructions.innerHTML = `
+    <h3>Controls:</h3>
+    <p>W/S: Rotate Up/Down</p>
+    <p>A/D: Rotate Left/Right</p>
+    <p>Q/E: Rotate CCW/CW</p>
+    <h3>Camera Controls:</h3>
+    <p>Arrow Left/Right: Pan</p>
+    <p>Arrow Up/Down: Tilt</p>
+`;
+document.body.appendChild(instructions);
+
+draw();
+
+</script>
+</body>
+</html>
