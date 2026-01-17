@@ -181,4 +181,4 @@ Understand this code and finish the following tasks:
 
 3. In the fragment shader, change the color of the triangle to anything you like. 
 
-Finally, screenshot the rendered triangle with new color and shape, submit that with your finding from step 2 to BlackBoard.
+Finally, screenshot the rendered triangle with new color and shape, submit that with your finding from step 1 and 2 to BlackBoard.
