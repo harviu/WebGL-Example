@@ -45,7 +45,7 @@ You can also open the developer tools in Chrome by pressing F12.
 
 ## JavaScript
 
-We have three parts of the JS codes, corresponding to application, geometry, and rasterization stage respectively. We are starting with the application stage code first.
+We have three parts of the JS codes, corresponding to application, geometry, and rasterization stage respectively. We are starting with the application stage code.
 
 ### Application Stage (Host Interface)
 
@@ -57,11 +57,9 @@ There are two ways to include JS scripts in HTML: either in a separate file or d
 ```html
 <script type="text/javascript" src="setupShader.js"></script>
 ```
-We hide some of the tedious initialization work inside the `html/setupShaders.js` file. We are not discussing that in this tutorial, but you can always goto that file to see the comments that explain the code.
+We hide some of the tedious initialization work inside the `html/setupShaders.js` file. We are not discussing that in this tutorial, but you can always go to that file to see the comments that explain the code.
 
-This loads the script from an external file, while inline scripts are written directly between `<script>` tags.
-
-We first set up the vertices for the triangle:
+The above loads the script from an external file, while inline scripts are written directly between `<script>` tags. We first set up the vertices for the triangle:
 ```JS
 // Set up triangle vertices
 // const is JS constant variable
@@ -177,7 +175,10 @@ Understand this code and finish the following tasks:
 
 1. Change the vertex coordinates of the triangle. See how triangle changes its shape and find out the visible drawing range of the canvas.
 
-2. In the vertex shader, change the third dimension of the vertex coordinates to other values. In your submission, write done what is the effect of changing that value.
+2. In the vertex shader, change the third and fourth dimension of the vertex coordinates to other values. In your submission, write down what is the effect of changing those values.
+    ```C
+    gl_Position = vec4(aPosition /*dimension 1 and 2*/, 0 /*dimension 3*/, 1.0 /*dimension 4*/);
+    ```
 
 3. In the fragment shader, change the color of the triangle to anything you like. 
 

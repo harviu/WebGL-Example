@@ -10,4 +10,4 @@ The canvas is split into four spaces. I showed an example of drawing the four ve
 
 Submit your modified code to BB.
 
->When submitting the code, you can leave out the `setupShader.js` file. I will use my copy of the file to test your code. So, do not make any change to `setupShader.js`.
+>When submitting the code, you can just submit the `primitives.html` and leave out the `setupShader.js` file. I will use my copy of the file to test your code. So, do not make any change to `setupShader.js`.
