@@ -4,14 +4,19 @@ We are looking at the same `interaction.html` example for this exercise. I sugge
 
 ## Coordinate Space Change
 
-The triangle is directly defined in the NDC space for the Hello World example, but you do not like this space when you are creating the objects. You find it is natural to define all axes from 0 to 100. So you make a new "world space". The bottom-left corner of this space is [0, 0], top-right corner is [100, 100]. Can you project the triangle (
+The triangle is directly defined in the NDC space for the Hello World example, but let's assume you do not like this space when you are creating the objects. You find it is natural to define all axes from 0 to 100. So you make a new "world space". The bottom-left corner of this space is [0, 0], top-right corner is [100, 100]. Can you project the triangle 
+$$
     (0.0,  0.5), 
     (-0.5, -0.5), 
-    (0.5, -0.5) ) we defined in the Hello World example to this new "world space"? Show your steps of calculation in the submission
+    (0.5, -0.5) 
+$$
+we defined in the Hello World example to this new "world space"? Show your steps of calculation in the submission.
+
+> Hint: do a linear mapping from [-1, -1] x [1, 1] to [0, 100] x [0, 100].
 
 ## Mouse Interaction
 
-I already implemented the mouse event listener and callback function code in the example. However, the current code only prints out the mouse position in the webpage. Can you try clicking on the canvas and find out what is the coordinate system for the mouse space? You can draw a similar diagram to the one I showed in class the video for the screen space.
+I already implemented the mouse event listener and callback function code in the example. However, the current code only prints out the mouse position in the webpage. Can you try clicking on the canvas and find out what is the coordinate system for the mouse space? You can draw a diagram to show what is the boundary coordinates and what do i and j axes look like.
 
 The next step is to convert the position from mouse space to NDC space. Use linear mapping to derive an equation for this conversion.
 Modify the example code to calculate the NDC space mouse position and show it on the canvas.
@@ -21,7 +26,7 @@ Modify the example code to calculate the NDC space mouse position and show it on
 display.innerHTML = `Mouse: ${x}, ${y}`;
 ```
 
-Finally, I want to you create a point at the location of mouse click. You can refer to previous exercises to see the code for the buffer management. 
+Finally, I want to you create a point at the location of mouse click. You can refer to previous exercises to see the code for drawing primitives. 
 
 
 ## Submission
