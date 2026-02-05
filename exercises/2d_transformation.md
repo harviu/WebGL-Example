@@ -25,14 +25,14 @@ function setRotationMatrix(rad){
 
 You may notice this matrix is **transposed** compared to the matrix in the slides. The matrix we have in the slides is:
 ```JS
-// rotation matrix in the slides
+// rotation matrix in the slides, notice the different location of -sin
 [
-    cosAngle,  sinAngle, 0.0,
-    -sinAngle, cosAngle, 0.0,
+    cosAngle, -sinAngle, 0.0,
+    sinAngle,  cosAngle, 0.0,
     0.0,       0.0,      1.0
 ]
 ```
-This is because WebGL stores the matrix in the column order, i.e., the matrix is stored as: first column, second column, and third column. So the matrix appears to be transposed if we write it in 2D.
+This is because WebGL stores the matrix in the column order, i.e., the matrix is stored as: first column, second column, and third column. So the matrix appears to be transposed if we write it in rows. Make sure in other matrices, you are writing the matrix in the correct order.
 
 ### Vertex shader
 
@@ -40,7 +40,7 @@ The vertex shader is changed for the first time in this exercise. To apply trans
 - If we multiply the matrix in CPU, we are doing that in application stage (JS code).
 - If we multiply the matrix in GPU, we need to do that in geometry stage (vertex shader).
 
-The whole point of WebGL is to use GPU to do the expensive geometry calculation, which includes transformation. So, we are doing that in vertex shader.
+The whole point of WebGL is to use GPU to do the expensive geometry and raster calculation, which includes transformation. So, we are doing that in vertex shader.
 
 ```C
 // Vertex shader
@@ -72,7 +72,7 @@ And then, this passes the constructed matrix to vertex shader:
 ```JS
 // transform_matrix is the buffer we created
 // The second argument must be false, it means if we are transposing the matrix or not
-// WebGL does not support transposition
+// WebGL does not support this so it is always false
 // rotationMatrix is the matrix we want to pass to vertex shader
 gl.uniformMatrix3fv(transform_matrix, false, rotationMatrix);
 ```
@@ -94,7 +94,7 @@ In JavaScript code, we add an event listener for the input box, so that every ti
 ```JS
 const input = document.getElementById("angleInput");
 input.addEventListener("input", () => {
-    // || 0 handles if the input is not a number
+    // "|| 0" handles when the input is not a number
     const angle = parseFloat(input.value) || 0;
     render(angle);
 });
@@ -102,4 +102,8 @@ input.addEventListener("input", () => {
 
 ## Tasks
 
-Similar to the rotation example, could you add translation and scaling functionality to this example? You can hard-code $t_x, t_y, s_x, s_y$. Or, if you want to practice your front-end development skill, you can try adding input boxes for them. After finishing, submit your code to BlackBoard.
+Similar to the rotation example, could you add translation and scaling functionality to this example? You can hard-code $t_x, t_y, s_x, s_y$. Or, if you want to practice your front-end development skill, you can try adding input boxes for them. 
+
+>Hint: You could only perform one kind of transformation (rotation, translation, or scaling) when the input is updated by swapping the matrices. We will discuss transformation composition later.
+
+After finishing, submit your code to BlackBoard.
