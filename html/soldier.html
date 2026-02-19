@@ -53,9 +53,11 @@ function multiplyMatrix3x3(a, b) {
             for (let k = 0; k < 3; k++) {  
                 // sum += a[row][k] * b[k][col];
                 // Remembering that our matrices are stored in column-major order
+                sum += a[row + k * 3] * b[k + col * 3];
             }
             // result[row][col] = sum;
             // result in the column-major order too
+            result[row + col * 3] = sum;
         }
     }
 
