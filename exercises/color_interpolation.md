@@ -63,8 +63,9 @@ Finally, `gl_FragColor = fColor` is using the interpolated per-fragment color as
 
 ## Tasks
 
-1. The first task you need to do is to calculate the edge equations for the three edges of the triangle. Use the vertex positions of the triangle from the example code. After getting the edge equations, state whether positive or negative of each equation means the point resides inside the triangle.
+1. In the first task, what you need to do is to calculate the edge equations for the three edges of the triangle following the lecture. Use the three vertex coordinates of the triangle from the example code for calculation. After getting the edge equations, state whether positive or negative of each equation means the point resides inside the triangle. 
 
-2. There is a white dot drawn inside the screen, use the barycentric coordinate interpolation from the slides to interpolate the color at the location of the white dot. You can modify the code to do the interpolation and assign the new interpolated color to the dot. If your calculation is correct, the dot should blend into the background color of the triangle. 
+2. There is a white dot drawn inside the screen, use the barycentric coordinate interpolation from the slides to interpolate the color at the location of the white dot. You can modify the code to do the interpolation and assign the new interpolated color to the dot. Follow the slides to calculate the $\lambda_1, \lambda_2, \lambda_3$ and calculate the interpolated color.
+If your calculation is correct, the dot should blend into the background color of the triangle. 
 
-After finishing the tasks, submit your calculation results from task 1 and the modified code the interpolated color from task 2 to BlackBoard
+After finishing the tasks, submit your edge equations from task 1 and the modified code of the interpolated color from task 2 to BlackBoard
