@@ -6,7 +6,7 @@ This exercise focuses on 3D transformations. Please use the example `3d_cube.htm
 
 This is our first 3D example. First, I want to show some differences between 2D and 3D.
 1. Of course, now the vertices are 3D vectors and transformation matrices are 4x4 matrices. This change is reflected both to the JavaScript and shader code
-2. I am using `drawElements` for this example, however, `drawElements` is not limited to 3D.We need to create an index array to specify which vertices we are using:
+2. I am using `drawElements` for this example, however, `drawElements` is not limited to 3D. We need to create an index array to specify which vertices we are using:
     ```JS
     const vertices = new Float32Array([
         0.5,  0.5,  -.5,  // right, top,    far // where is the vertex in the cube
@@ -50,7 +50,7 @@ This is our first 3D example. First, I want to show some differences between 2D 
     ```
     Remember in 3D, your transformation matrix is 4x4 (mat4). 
 
-2. For a point at (1, 1, -1), if we rotate the point around x axis by 90 degree, what is the new point position? Calculate this using the equations from the class.
+2. For a point at (1, 1, -1), if we rotate the point around x axis by 90 degree, what is the new point position? Calculate this using the rotation matrix multiplication from the class.
 
 
 
