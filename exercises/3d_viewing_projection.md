@@ -1,7 +1,7 @@
 # Exercise 10: 3D Viewing and Projection
 
 This exercise focuses on 3D Viewing and Transformation. Please use the example `3d_cube.html`.
-You have read this code in the last exercise, and we said that we setup identity view and projection matrices as a placeholder.
+You have read this code in the last exercise, and we we setup identity view and projection matrices as a placeholder.
 
 ## Tasks
 
