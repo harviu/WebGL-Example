@@ -14,13 +14,16 @@ This exercise will get you familiar with setting up normal vectors and normal ma
 
     The task for you is to add the normal vectors for each vertex. Then, similar to vertex positions, use buffers to pass the normal vectors to the shader program.
 
-2. The second task is to calculate the normal matrix using $N = (M^{-1})^T$. $M$ should be first converted to a 3x3 matrix before the calculation. You can find glMatrix functions to do it. And then, the new normal vector can be calculated as $\bold{n}'=N\bold{n}$. For the exercise, we will just create a dummy normal vector to test the normal matrix:
+2. The second task is to calculate the normal matrix using $N = (M^{-1})^T$. $M$ should be first converted to a 3x3 matrix before the calculation. You can find glMatrix functions `mat3.fromMat4(out, a)` to do it. And then, the new normal vector can be calculated as $\bold{n}'=N\bold{n}$. The nMatrix will be used in lighting exercise later.
+For the exercise, we will just create a dummy normal vector to test the normal matrix:
     ```JS
     let normal = vec3.fromValues(0,0,1);
     ```
-    The new normal vector needs to be normalized to have unit magnitude after the applying the normal matrix.
+    The new normal vector needs to be normalized to have unit magnitude after the applying the normal matrix. This can be done using `vec3.normalize(out, a)`.
 
-    Test the correctness of the normal matrix by printing out the new and old normal vector before and after applying the normal matrix. Try applying rotation, scaling, and translation to the modeling matrix $M$. Think whether these transformations will also change the normal vector direction or not. Verify your answer by comparing the new and old normal vectors. Report your answers in your submission.
+    Test the correctness of the normal matrix by printing out the new and old dummy normal vector before and after applying the normal matrix. 
+
+    Try applying rotation, scaling, and translation to the modeling matrix $M$. Think whether these transformations will also change the normal vector or not. Verify your answer by comparing the new and old normal vectors. Report your answers in your submission.
 
     The code to pass the normal matrix to shader programs is already there, you will use the normal matrix in the lighting exercise.
 

@@ -44,7 +44,7 @@ These should build the skeleton code for you to implement the Gouraud shading. N
 ## Task
 
 Implement the Gourand shading in the vertex shader following the equations from the slides. Some reminder for you before you start coding:
-- Eye positions and light positions are defined in the world space. So to calculate the L, R, and E vectors, object position and N should also be transformed to world space first.
+- Eye positions and light positions are defined in the world space. So to calculate the L, R, and E vectors, object vertices and normal vectors should also be transformed to world space first. (Reuse the normal matrix from Exercise 11).
 - Be careful about the vector direction when calculating $N \cdot L$ and $R \cdot E$. The cosine value will be negative if the vector direction is wrong.
 - You can use GLSL built-in function `reflect` to calculate $R$ vector. This function assumes incident light is pointing to the object.
 - You can use `max(dot(R, E), 0.0)` to ensure $cos^n(\phi)$ is always positive. Think of when it will be negative and what will happen in that case.
